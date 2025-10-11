@@ -1,4 +1,3 @@
-# cpu.py
 from typing import List
 from memory import Memory
 from decoder import execute_data_processing, execute_load_store, execute_branch
