@@ -21,5 +21,6 @@ class Memory:
             if addr + 4 <= len(self.memory):
                 val = self.read_word(addr)  
             else: val = 0
-            
-            print(f"0x{addr:08X}: 0x{val:08X}")
+
+            print(f"0x{addr:08X}: 0x{val:08X}") 
+  
