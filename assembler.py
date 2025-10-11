@@ -55,7 +55,6 @@ def assemble_to_machine_code(lines: List[str]) -> List[int]:
 
     return machine_codes
 
-
 def write_machine_code_to_file(machine_codes: List[int], output_file: str) -> None:
     with open(output_file, "wb") as f:
         for code in machine_codes:

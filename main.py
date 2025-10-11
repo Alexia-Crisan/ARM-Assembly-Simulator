@@ -10,6 +10,7 @@ def main():
     # 3. assemble
     machine_codes = assemble_to_machine_code(clean_lines)
 
+    # 4. write in file
     write_machine_code_to_file(machine_codes, "program.bin")
     write_machine_code_as_bits(machine_codes, "program_bits.txt")
 
