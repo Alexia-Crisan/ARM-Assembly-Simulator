@@ -1,4 +1,5 @@
-from assembler import read_source, clean_and_encode_lines, assemble_to_machine_code, write_machine_code_to_file, write_machine_code_as_bits
+from assembler import read_source, clean_and_encode_lines, assemble_to_machine_code
+from write_binary import write_machine_code_as_bits, write_machine_code_to_file
 
 def main():
     # 1. read source file
