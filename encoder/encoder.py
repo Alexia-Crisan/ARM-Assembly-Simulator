@@ -10,7 +10,6 @@ from .data_transfer_encoder import encode_load_store
 from .branch_encoder import encode_branch
 from .helpers import OPCODES
 
-
 def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) -> int:
     """
     Encode a single line into a 32-bit word. current_place is the byte address of this instruction.
