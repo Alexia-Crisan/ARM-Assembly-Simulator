@@ -26,7 +26,7 @@ def main():
 
     print("[SIMULATION START]")
     steps = cpu.run(max_steps = 20)
-    print(f"[SIMULATION END] Executed {steps} instructions")
+    print(f"[SIMULATION END] Executed {steps - 1} instructions")
     
     for i, val in enumerate(cpu.regs):
         print(f"R{i}: 0x{val:08X}")
