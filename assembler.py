@@ -39,7 +39,7 @@ def assemble_to_machine_code(lines: List[str]) -> List[int]:
     # collect labels
     for line in lines:
         if line.endswith(":"):            
-            label = line[:-1].strip()
+            label = line[ : -1].strip()
             labels[label] = program_counter # label points to current program_counter address
         else:
             instructions.append(line)
