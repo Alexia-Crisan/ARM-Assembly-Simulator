@@ -2,16 +2,7 @@
 Data processing (ADD, SUB, MOV): cond|00|I|opcode|S|Rn|Rd|operand2
 """
 
-from encoder import register_to_number, encode_immediate_value
-
-COND_ALWAYS = 0b1110 << 28 # always flag: 0b1110
-
-# data processing opcodes (bits 24 - 21)
-OPCODES = {
-    "ADD": 0b0100 << 21, # ADD (addition), Example: ADD R0, R1, R2 -> R0 = R1 + R2
-    "SUB": 0b0010 << 21, # SUB (subtract), Example: SUB R2, R0, R1 -> R2 = R0 - R1
-    "MOV": 0b1101 << 21, # MOV (move / immediate load), Example: MOV R0, #5 -> R0 = 5
-}
+from .helpers import register_to_number, encode_immediate_value, COND_ALWAYS, OPCODES
 
 def encode_data_processing_instruction (instruction: str, parts: list) -> int:
     """

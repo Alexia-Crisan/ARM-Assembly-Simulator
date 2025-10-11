@@ -2,9 +2,7 @@
 Single data transfer (LDR, STR): cond|01|I|P|U|B|W|L|Rn|Rd|offset12
 """
 
-from encoder import register_to_number, encode_immediate_value
-
-COND_ALWAYS = 0b1110 << 28 # always flag: 0b1110
+from .helpers import register_to_number, encode_immediate_value, COND_ALWAYS
 
 # single data transfer base (bits 27-26 = 01)
 # P = 1 (pre-indexed), U = 1 (add offset), B = 0 (word), W = 0, L = 1 for LDR, L = 0 for STR

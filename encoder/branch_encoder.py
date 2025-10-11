@@ -3,9 +3,7 @@ Branch (B): cond|101|offset24
 """
 
 from typing import Dict
-from encoder import register_to_number, encode_immediate_value
-
-COND_ALWAYS = 0b1110 << 28 # always flag: 0b1110
+from .helpers import register_to_number, encode_immediate_value, COND_ALWAYS
 
 def encode_branch(label: str, current_place: int, labels: Dict[str, int]) -> int:
     if label not in labels:
