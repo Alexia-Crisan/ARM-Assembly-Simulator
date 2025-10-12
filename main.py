@@ -28,13 +28,10 @@ def main():
     steps = cpu.run(max_steps = 20)
     print(f"[SIMULATION END] Executed {steps - 1} instructions")
     
-    for i, val in enumerate(cpu.regs):
-        print(f"R{i}: 0x{val:08X}")
+    #6. dump regisers and memory content after simulation
+    cpu.dump_registers()
+    cpu.dump_memory()
 
-    print("\nMemory[0:64]:")
-    for addr in range(0, 64, 4):
-        word = memory.read_word(addr)
-        print(f"{addr:04X}: 0x{word:08X}")
 
 
 if __name__ == "__main__":

@@ -48,3 +48,15 @@ class CPU:
             self.get_instruction()
             steps += 1
         return steps
+    
+    def dump_registers(self):
+        print(f"\nRegisters content:")
+        for i, val in enumerate(self.regs):
+            print(f"R{i}: 0x{val:08X}")
+
+    def dump_memory(self, start = 0, end = 64, step = 4):
+        print(f"\nMemory content:")
+        print(f"Memory[{start}:{end}]:")
+        for addr in range(start, end, step):
+            word = self.memory.read_word(addr)
+            print(f"{addr:04X}: 0x{word:08X}")
