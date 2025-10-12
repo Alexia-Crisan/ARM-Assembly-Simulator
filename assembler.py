@@ -6,7 +6,7 @@ def read_source(path: str) -> List[str]:
         return [ln.rstrip("\n") for ln in f]
 
 
-def clean_and_encode_lines(lines: List[str]) -> List[str]:
+def clean_lines(lines: List[str]) -> List[str]:
     """
     Removes empty lines and comments
     Keeps labels
