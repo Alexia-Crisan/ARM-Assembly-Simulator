@@ -1,11 +1,11 @@
 from assembler import read_source, clean_and_encode_lines, assemble_to_machine_code
-from write_binary import write_machine_code_as_bits, write_machine_code_to_file
+from utils.write_binary import write_machine_code_as_bits, write_machine_code_to_file
 from cpu import CPU
 from memory import Memory
 
 def main():
     # 1. read source file
-    source_lines = read_source("program.s")
+    source_lines = read_source("program_in/program_ADD_MOV_STR_B.s")
 
     # 2. clean code and encode
     clean_lines = clean_and_encode_lines(source_lines)
@@ -14,8 +14,8 @@ def main():
     machine_codes = assemble_to_machine_code(clean_lines)
 
     # 4. write in files
-    write_machine_code_to_file(machine_codes, "program.bin")
-    write_machine_code_as_bits(machine_codes, "program_bits.txt")
+    write_machine_code_to_file(machine_codes, "program_out/program.bin")
+    write_machine_code_as_bits(machine_codes, "program_out/program_bits.txt")
 
     # 5. simulate
     mem_size = 1024  # 1KB memory
