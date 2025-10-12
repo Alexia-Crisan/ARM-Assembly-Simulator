@@ -1,6 +1,6 @@
 from typing import List
 from memory import Memory
-from decoder import execute_data_processing, execute_load_store, execute_branch
+from decoder.decoder import execute_data_processing, execute_load_store, execute_branch
 
 class CPU:
     def __init__(self, memory: Memory):
@@ -26,7 +26,7 @@ class CPU:
         top2 = (instruction >> 26) & 0b11      # bits [27:26]
         top3 = (instruction >> 25) & 0b111     # bits [27:25]
 
-        if top3 == 0b101: # branch instruction
+        if top3 == 0b101: # Branch instruction
             execute_branch(instruction, self.regs)
             return
         # Data-processing: top2 == 00
