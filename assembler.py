@@ -29,7 +29,6 @@ def clean_lines(lines: List[str]) -> List[str]:
 
     return cleaned
 
-
 def assemble_to_machine_code(lines: List[str]) -> List[int]:
 
     labels: Dict[str, int] = {}
