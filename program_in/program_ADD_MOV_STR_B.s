@@ -8,3 +8,4 @@ start:
 add:
     MOV R3, #4
     ADD R4, R0, R3
+HLT

@@ -54,5 +54,7 @@ def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) ->
         if len(args) != 1:
             raise ValueError(f"{instruction} takes a single label argument")
         return encode_branch(args[0], current_place, labels, cond)
+    if instruction == 'HLT':
+        return 0xF0000000
 
     raise ValueError(f"Unsupported instruction in this encoder: {instruction}")

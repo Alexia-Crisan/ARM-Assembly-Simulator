@@ -33,7 +33,9 @@ class CPU:
         top2 = (instruction >> 26) & 0b11      # bits [27:26]
         top3 = (instruction >> 25) & 0b111     # bits [27:25]
 
-        if top3 == 0b101:  # Branch
+        if instruction == 0xF0000000:  # HLT opcode
+            self.halt_execution()
+        elif top3 == 0b101:  # Branch
             execute_branch(instruction, self)
             return
         elif top2 == 0b00:  # Data processing
@@ -44,6 +46,10 @@ class CPU:
             self.regs[15] += 4
         else:
             raise NotImplementedError(f"Unsupported instruction format: top2={top2:02b} top3={top3:03b}")
+
+    def halt_execution(self):
+        print("Execution halted.")
+        self.running = False
 
     def run(self, max_steps = 1000):
         self.running = True
