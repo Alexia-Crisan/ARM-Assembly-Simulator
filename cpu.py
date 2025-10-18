@@ -9,6 +9,12 @@ class CPU:
         self.data_memory = data_memory
         self.running = False
 
+        # Flags
+        self.N = 0 # Negative: set if the result is negative.
+        self.Z = 0 # Zero: set if the result is zero.
+        self.C = 0 # Carry: set if there was a carry out from addition/subtraction.
+        self.V = 0 # Overflow: set if signed overflow occurs.
+
     def get_instruction(self):
         pc = self.regs[15]
 
