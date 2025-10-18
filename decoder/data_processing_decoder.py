@@ -26,7 +26,7 @@ def decode_data_processing_instruction(instruction: int, regs: list, flags: dict
         result = (regs[rn_idx] - val2) & 0xFFFFFFFF
         flags['Z'] = int(result == 0)
         flags['N'] = int((result >> 31) & 1)
-        flags['C'] = int(regs[rn_idx] >= val2)
         flags['V'] = int(((regs[rn_idx] ^ val2) & (regs[rn_idx] ^ result)) >> 31)
+        #flags['C'] = int(regs[rn_idx] >= val2)
     else:
         raise NotImplementedError(f"Opcode {opcode} not implemented")
