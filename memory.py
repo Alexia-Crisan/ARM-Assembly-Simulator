@@ -13,4 +13,6 @@ class Memory:
             raise MemoryError("Memory write out of range")
         
         self.memory[addr : addr + 4] = (value & 0xFFFFFFFF).to_bytes(4, "big")
-  
+
+    def load_bytes(self, data: bytes, start_addr: int = 0):
+        self.memory[start_addr : start_addr + len(data)] = data

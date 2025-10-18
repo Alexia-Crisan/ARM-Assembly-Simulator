@@ -4,35 +4,36 @@ from cpu import CPU
 from memory import Memory
 
 def main():
-    # 1. read source file
+    # 1. Read and clean source
     source_lines = read_source("program_in/program_ADD_MOV_STR_B.s")
-
-    # 2. clean code
     cleaned_lines = clean_lines(source_lines)
 
-    # 3. assemble
+    # 2. Assemble
     machine_codes = assemble_to_machine_code(cleaned_lines)
 
-    # 4. write in files
+    # 3. Write outputs
     write_machine_code_to_file(machine_codes, "program_out/program.bin")
     write_machine_code_as_bits(machine_codes, "program_out/program_bits.txt")
 
-    # 5. simulate
-    mem_size = 1024  # 1KB memory
-    memory = Memory(mem_size)
+    # 4. Create memory
+    instruction_memory = Memory(1024 * 4)  # 4 KB instruction memory
+    data_memory = Memory(1024 * 4)         # 4 KB data memory
 
-    cpu = CPU(memory)
-    cpu.load_program(machine_codes)
+    # 5. Load program into instruction memory
+    with open("program_out/program.bin", "rb") as f:
+        program_bytes = f.read()
+        instruction_memory.load_bytes(program_bytes, start_addr = 0)
 
+    # 6. Create CPU and simulate
+    cpu = CPU(instruction_memory, data_memory)
     print("[SIMULATION START]")
     steps = cpu.run(max_steps = 20)
     print(f"[SIMULATION END] Executed {steps - 1} instructions")
-    
-    #6. dump regisers and memory content after simulation
+
+    # 7. Dump registers and memory
     cpu.dump_registers()
-    cpu.dump_memory()
-
-
+    cpu.dump_memory(cpu.instruction_memory, start = 0, end = 28, name = "Instruction Memory")
+    cpu.dump_memory(cpu.data_memory, start = 0, end = 64, name = "Data Memory")
 
 if __name__ == "__main__":
     main()
