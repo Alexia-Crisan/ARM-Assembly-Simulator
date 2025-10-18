@@ -5,8 +5,8 @@ def decode_branch(instruction: int, regs: list, flags: dict):
     cond = (instruction >> 28) & 0xF
     offset24 = instruction & 0xFFFFFF
 
-    if offset24 & (1 << 23):
-        offset24 |= 0xFF000000
+    if offset24 & (1 << 23):  
+        offset24 -= 1 << 24
     target_address = regs[15] + 8 + (offset24 << 2)
 
     take_branch = False

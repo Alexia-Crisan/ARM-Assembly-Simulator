@@ -27,12 +27,12 @@ def main():
     # 6. Create CPU and simulate
     cpu = CPU(instruction_memory, data_memory)
     print("[SIMULATION START]")
-    steps = cpu.run(max_steps = 20)
+    steps = cpu.run(max_steps = 100)
     print(f"[SIMULATION END] Executed {steps - 1} instructions")
 
     # 7. Dump registers and memory
     cpu.dump_registers()
-    cpu.dump_memory(cpu.instruction_memory, start = 0, end = 28, name = "Instruction Memory")
+    cpu.dump_memory(cpu.instruction_memory, start = 0, end = 42, name = "Instruction Memory")
     cpu.dump_memory(cpu.data_memory, start = 0, end = 64, name = "Data Memory")
 
 if __name__ == "__main__":

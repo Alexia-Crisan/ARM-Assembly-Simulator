@@ -14,7 +14,7 @@ def encode_data_processing_instruction (instruction: str, parts: list) -> int:
     """
     opcode = OPCODES[instruction]
 
-    if instruction == "CMP": S = 1 
+    if instruction in ["CMP"] : S = 1 
     else: S = 0
 
     if instruction == "ADD" or instruction == "SUB":
