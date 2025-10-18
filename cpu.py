@@ -70,3 +70,21 @@ class CPU:
         for addr in range(start, end, step):
             word = memory.read_word(addr)
             print(f"{addr:04X}: 0x{word:08X}")
+
+    def dump_memory_as_list(self, memory, size=None):
+        """Return memory content as a list of integers for visualization."""
+
+        if size is None:
+            size = memory.size
+        mem_list = []
+
+        for addr in range(0, size, 4):
+            try:
+                mem_list.append(memory.read_word(addr))
+            except MemoryError:
+                mem_list.append(0)
+        return mem_list
+
+    def get_registers_dict(self):
+        return {f"R{i}": val for i, val in enumerate(self.regs)}
+

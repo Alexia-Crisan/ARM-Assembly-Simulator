@@ -2,6 +2,7 @@ from assembler import read_source, clean_lines, assemble_to_machine_code
 from utils.write_binary import write_machine_code_as_bits, write_machine_code_to_file
 from cpu import CPU
 from memory import Memory
+from visualize import visualize_cpu 
 
 def main():
     # 1. Read and clean source
@@ -34,6 +35,13 @@ def main():
     cpu.dump_registers()
     cpu.dump_memory(cpu.instruction_memory, start = 0, end = 42, name = "Instruction Memory")
     cpu.dump_memory(cpu.data_memory, start = 0, end = 64, name = "Data Memory")
+
+    # 8. Visualize CPU state in a GUI
+    registers_dict = cpu.get_registers_dict()            
+    flags_dict = cpu.flags                                 
+    instr_mem_list = cpu.dump_memory_as_list(cpu.instruction_memory, size = 256)
+    data_mem_list = cpu.dump_memory_as_list(cpu.data_memory, size = 256)
+    visualize_cpu(registers_dict, flags_dict, instr_mem_list, data_mem_list)
 
 if __name__ == "__main__":
     main()
