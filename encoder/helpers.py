@@ -19,6 +19,16 @@ CONDITION_CODES = {
 
 COND_ALWAYS = CONDITION_CODES["AL"]
 
+BRANCH_COND_MAP = {
+    "B": "AL",
+    "BEQ": "EQ",
+    "BNE": "NE",
+    "BLT": "LT",
+    "BGT": "GT",
+    "BGE": "GE",
+    "BLE": "LE",
+}
+
 def register_to_number(reg: str) -> int: #R2 -> 2
     if not reg.upper().startswith("R"):
         raise ValueError(f"Expected register like Rnum, got: {reg}")

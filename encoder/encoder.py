@@ -8,7 +8,7 @@ from typing import Dict
 from .data_processing_encoder import encode_data_processing_instruction
 from .data_transfer_encoder import encode_load_store
 from .branch_encoder import encode_branch
-from .helpers import OPCODES
+from .helpers import OPCODES, BRANCH_COND_MAP
 
 def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) -> int:
     """
@@ -49,9 +49,10 @@ def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) ->
         return encode_data_processing_instruction(instruction, args)
     if instruction in ("LDR", "STR"):
         return encode_load_store(instruction, args)
-    if instruction == "B":
+    if instruction.startswith("B"):  # any branch
+        cond = BRANCH_COND_MAP.get(instruction.upper(), "AL")
         if len(args) != 1:
-            raise ValueError("B takes a single label argument")
-        return encode_branch(args[0], current_place, labels)
+            raise ValueError(f"{instruction} takes a single label argument")
+        return encode_branch(args[0], current_place, labels, cond)
 
     raise ValueError(f"Unsupported instruction in this encoder: {instruction}")

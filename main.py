@@ -5,7 +5,7 @@ from memory import Memory
 
 def main():
     # 1. Read and clean source
-    source_lines = read_source("program_in/program_ADD_MOV_STR_B.s")
+    source_lines = read_source("program_in/program_Gauss_CMP_BR.s")
     cleaned_lines = clean_lines(source_lines)
 
     # 2. Assemble

@@ -10,10 +10,12 @@ class CPU:
         self.running = False
 
         # Flags
-        self.N = 0 # Negative: set if the result is negative.
-        self.Z = 0 # Zero: set if the result is zero.
-        self.C = 0 # Carry: set if there was a carry out from addition/subtraction.
-        self.V = 0 # Overflow: set if signed overflow occurs.
+        self.flags = {
+            "N": 0,  # Negative: set if the result is negative
+            "Z": 0,  # Zero: set if the result is zero
+            "C": 0,  # Carry: set if there was a carry out from addition/subtraction
+            "V": 0   # Overflow: set if signed overflow occurs
+        }
 
     def get_instruction(self):
         pc = self.regs[15]
@@ -32,13 +34,13 @@ class CPU:
         top3 = (instruction >> 25) & 0b111     # bits [27:25]
 
         if top3 == 0b101:  # Branch
-            execute_branch(instruction, self.regs)
+            execute_branch(instruction, self)
             return
         elif top2 == 0b00:  # Data processing
-            execute_data_processing(instruction, self.regs)
+            execute_data_processing(instruction, self)
             self.regs[15] += 4
         elif top2 == 0b01:  # Load/store
-            execute_load_store(instruction, self.regs, self.data_memory)
+            execute_load_store(instruction, self, self.data_memory)
             self.regs[15] += 4
         else:
             raise NotImplementedError(f"Unsupported instruction format: top2={top2:02b} top3={top3:03b}")
