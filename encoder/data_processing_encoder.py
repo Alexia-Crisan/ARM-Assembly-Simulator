@@ -9,8 +9,12 @@ def encode_data_processing_instruction (instruction: str, parts: list) -> int:
       MOV Rd, #imm
       ADD Rd, Rn, Rm
       ADD Rd, Rn, #imm
+      ADD Rd, Rm       
       SUB Rd, Rn, Rm
       SUB Rd, Rn, #imm
+      SUB Rd, Rm   
+      CMP Rn, Rm
+      CMP Rn, #imm
     """
     opcode = OPCODES[instruction]
 
@@ -18,9 +22,16 @@ def encode_data_processing_instruction (instruction: str, parts: list) -> int:
     else: S = 0
 
     if instruction == "ADD" or instruction == "SUB":
-        rd = register_to_number(parts[0].rstrip(","))
-        rn = register_to_number(parts[1].rstrip(","))
-        op2 = parts[2]
+        if len(parts) == 2: # ADD R0, R1 -> R0 += R1
+            rd = register_to_number(parts[0].rstrip(","))
+            rn = rd  # implicit
+            op2 = parts[1]
+        elif len(parts) == 3: # ADD R0, R1, R2 -> R0 = R1 + R2
+            rd = register_to_number(parts[0].rstrip(","))
+            rn = register_to_number(parts[1].rstrip(","))
+            op2 = parts[2]
+        else:
+            raise ValueError(f"Invalid number of operands for {instruction}")
 
         if op2.startswith("#"):
             immediate_value = int(op2[1:], 0)
