@@ -13,3 +13,5 @@ ADD R2, R2, #1  ; counter++
 
 CMP R2, R0      ; compare counter with N
 BNE sum_loop     ; if counter < N, loop
+
+STR R1, [R3]
