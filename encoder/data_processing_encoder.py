@@ -7,6 +7,7 @@ from .helpers import register_to_number, encode_immediate_value, COND_ALWAYS, OP
 def encode_data_processing_instruction (instruction: str, parts: list) -> int:
     """
       MOV Rd, #imm
+      MOV Rd, Rn
       ADD Rd, Rn, Rm
       ADD Rd, Rn, #imm
       ADD Rd, Rm       
