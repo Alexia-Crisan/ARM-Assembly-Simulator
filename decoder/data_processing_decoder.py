@@ -1,6 +1,7 @@
-def decode_data_processing_instruction(instruction: int, regs: list):
+def decode_data_processing_instruction(instruction: int, regs: list, flags: dict):
     """
-    Decode and execute data processing instruction (ADD, SUB, MOV)
+    Decode and execute data-processing instructions (ADD, SUB, MOV, CMP)
+    flags: dict with keys 'N', 'Z', 'C', 'V'
     """
     opcode = (instruction >> 21) & 0xF
     I = (instruction >> 25) & 1
@@ -21,5 +22,9 @@ def decode_data_processing_instruction(instruction: int, regs: list):
         regs[rd_idx] = (regs[rn_idx] - val2) & 0xFFFFFFFF
     elif opcode == 0b1101:  # MOV
         regs[rd_idx] = val2
+    elif opcode == 0b1010:  # CMP
+        result = (regs[rn_idx] - val2) & 0xFFFFFFFF
+        flags['Z'] = int(result == 0)
+        flags['N'] = int((result >> 31) & 1)
     else:
         raise NotImplementedError(f"Opcode {opcode} not implemented")

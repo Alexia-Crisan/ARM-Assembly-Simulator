@@ -14,7 +14,8 @@ def encode_data_processing_instruction (instruction: str, parts: list) -> int:
     """
     opcode = OPCODES[instruction]
 
-    S = 0
+    if instruction == "CMP": S = 1 
+    else: S = 0
 
     if instruction == "ADD" or instruction == "SUB":
         rd = register_to_number(parts[0].rstrip(","))
@@ -46,4 +47,16 @@ def encode_data_processing_instruction (instruction: str, parts: list) -> int:
         operand2 = encode_immediate_value(imm)
         
         machine_instruction = COND_ALWAYS | (0 << 26) | (I << 25) | opcode | (S << 20) | (rn << 16) | (rd << 12) | operand2
+        return machine_instruction
+    
+    if instruction == "CMP":
+        rn = register_to_number(parts[0].rstrip(","))
+        I = 1 if parts[1].startswith("#") else 0
+
+        if I:
+            operand2 = encode_immediate_value(int(parts[1][1:], 0))
+        else:
+            operand2 = register_to_number(parts[1])
+        
+        machine_instruction = COND_ALWAYS | (0 << 26) | (I << 25) | opcode | (S << 20) | (rn << 16) | operand2
         return machine_instruction

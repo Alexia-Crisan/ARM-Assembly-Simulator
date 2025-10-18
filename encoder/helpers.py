@@ -3,9 +3,21 @@ OPCODES = {
     "ADD": 0b0100 << 21, # ADD (addition), Example: ADD R0, R1, R2 -> R0 = R1 + R2
     "SUB": 0b0010 << 21, # SUB (subtract), Example: SUB R2, R0, R1 -> R2 = R0 - R1
     "MOV": 0b1101 << 21, # MOV (move / immediate load), Example: MOV R0, #5 -> R0 = 5
+    "CMP": 0b1010 << 21, # CMP (compare), Example: CMP Rn, Operand2 -> sets flags
 }
 
-COND_ALWAYS = 0b1110 << 28 # always flag: 0b1110
+# Condition codes (bits 31 - 28)
+CONDITION_CODES = {
+    "EQ": 0b0000 << 28,  # equal
+    "NE": 0b0001 << 28,  # not equal
+    "GE": 0b1010 << 28,  # signed greater or equal
+    "LT": 0b1011 << 28,  # signed less than
+    "GT": 0b1100 << 28,  # signed greater than
+    "LE": 0b1101 << 28,  # signed less or equal
+    "AL": 0b1110 << 28,  # always (default)
+}
+
+COND_ALWAYS = CONDITION_CODES["AL"]
 
 def register_to_number(reg: str) -> int: #R2 -> 2
     if not reg.upper().startswith("R"):
