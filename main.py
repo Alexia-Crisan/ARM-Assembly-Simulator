@@ -6,7 +6,7 @@ from visualize import visualize_cpu
 
 def main():
     # 1. Read and clean source
-    source_lines = read_source("program_in/program_ADD_SUB_CMP_verification.s")
+    source_lines = read_source("program_in/program_LDR_STR_verification.s")
     cleaned_lines = clean_lines(source_lines)
 
     # 2. Assemble
