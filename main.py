@@ -2,11 +2,11 @@ from assembler import read_source, clean_lines, assemble_to_machine_code
 from utils.write_binary import write_machine_code_as_bits, write_machine_code_to_file
 from cpu import CPU
 from memory import Memory
-from visualize import visualize_cpu 
+from utils.visualize import visualize_cpu 
 
 def main():
     # 1. Read and clean source
-    source_lines = read_source("program_in/program_ADD_SUB_CMP_verification.s")
+    source_lines = read_source("program_in/program_Gauss_CMP_BR.s")
     cleaned_lines = clean_lines(source_lines)
 
     # 2. Assemble
