@@ -8,6 +8,7 @@ from typing import Dict
 from .data_processing_encoder import encode_data_processing_instruction
 from .data_transfer_encoder import encode_load_store
 from .branch_encoder import encode_branch
+from .multiplication_set_encoder import encode_multiply_or_div_instruction
 from .helpers import OPCODES, BRANCH_COND_MAP
 
 def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) -> int:
@@ -54,6 +55,8 @@ def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) ->
         if len(args) != 1:
             raise ValueError(f"{instruction} takes a single label argument")
         return encode_branch(args[0], current_place, labels, cond)
+    if instruction in ["MUL", "DIV"]:
+        return encode_multiply_or_div_instruction(instruction, args)
     if instruction == 'HLT':
         return 0xF0000000
 

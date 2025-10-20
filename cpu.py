@@ -41,6 +41,7 @@ class CPU:
             return
         elif is_multiply_set_instruction(instruction):  # Multiply/Divide
             execute_multiply_set(instruction, self)
+            self.regs[15] += 4
         elif top2 == 0b00:  # Data processing
             execute_data_processing(instruction, self)
             self.regs[15] += 4

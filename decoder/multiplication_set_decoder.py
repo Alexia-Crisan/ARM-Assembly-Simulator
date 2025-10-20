@@ -11,11 +11,11 @@ def decode_multiply_set(instruction: int, regs: list):
     Rm = instruction & 0xF
 
     if A == 0:  # MUL
-        regs[Rd] = regs[Rm] * regs[Rs]
+        regs[Rd] = (regs[Rm] * regs[Rs]) & 0xFFFFFFFF
     else:       # DIV
         if regs[Rs] == 0:
             raise ZeroDivisionError(f"Divide by zero: R{Rs}={regs[Rs]}")
-        regs[Rd] = regs[Rm] // regs[Rs]  # integer division
+        regs[Rd] = (regs[Rm] // regs[Rs]) & 0xFFFFFFFF # integer division
 
 def is_multiply_set_instruction(instruction: int) -> bool:
         bits_27_22 = (instruction >> 22) & 0b111111

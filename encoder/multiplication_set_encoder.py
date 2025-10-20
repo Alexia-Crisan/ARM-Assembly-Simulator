@@ -4,7 +4,6 @@ Multiply (MUL, DIV): cond | 000000 | A | S | Rd | Rn | Rs | 1001 | Rm
 
 from .helpers import register_to_number, COND_ALWAYS
 
-
 def encode_multiply_or_div_instruction(instruction: str, parts: list) -> int:
     """
     MUL Rd, Rn, Rm
