@@ -49,7 +49,7 @@ class CPU:
             execute_load_store(instruction, self, self.data_memory)
             self.regs[15] += 4
         else:
-            raise NotImplementedError(f"Unsupported instruction format: top2={top2:02b} top3={top3:03b}")
+            raise NotImplementedError(f"Unsupported instruction format!")
 
     def halt_execution(self):
         print("Execution halted.")
