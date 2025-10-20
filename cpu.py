@@ -34,9 +34,6 @@ class CPU:
             self.running = False
             return
 
-        top2 = (instruction >> 26) & 0b11      # bits [27:26]
-        top3 = (instruction >> 25) & 0b111     # bits [27:25]
-
         if instruction == 0xF0000000:  # HLT opcode
             self.halt_execution()
         elif is_branch_instruction(instruction):  # Branch
