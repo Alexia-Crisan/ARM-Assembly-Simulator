@@ -4,6 +4,9 @@ OPCODES = {
     "SUB": 0b0010 << 21, # SUB (subtract), Example: SUB R2, R0, R1 -> R2 = R0 - R1
     "MOV": 0b1101 << 21, # MOV (move / immediate load), Example: MOV R0, #5 -> R0 = 5
     "CMP": 0b1010 << 21, # CMP (compare), Example: CMP Rn, Operand2 -> sets flags
+    "AND": 0b0000 << 21, # AND (logic and), Example: AND R0, R1, R2 -> R0 = R1 & R2
+    "ORR": 0b1100 << 21, # ORR (logic or), Example: AND R0, R1, R2 -> R0 = R1 | R2
+    "EOR": 0b0001 << 21, # XOR (exclusive or), , Example: EOR R0, R1, R2 -> R0 = R1 ^ R2
 }
 
 # Condition codes (bits 31 - 28)

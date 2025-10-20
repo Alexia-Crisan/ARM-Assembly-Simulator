@@ -10,19 +10,28 @@ def encode_data_processing_instruction (instruction: str, parts: list) -> int:
       MOV Rd, Rn
       ADD Rd, Rn, Rm
       ADD Rd, Rn, #imm
-      ADD Rd, Rm       
+      ADD Rd, Rm/#imm       
       SUB Rd, Rn, Rm
       SUB Rd, Rn, #imm
-      SUB Rd, Rm   
+      SUB Rd, Rm/#imm   
       CMP Rn, Rm
       CMP Rn, #imm
+      AND Rd, Rn, Rm
+      AND Rd, Rn, #imm
+      AND Rd, Rm/#imm 
+      ORR Rd, Rn, Rm
+      ORR Rd, Rn, #imm
+      ORR Rd, Rm/#imm  
+      EOR Rd, Rn, Rm
+      EOR Rd, Rn, #imm
+      EOR Rd, Rm/#imm  
     """
     opcode = OPCODES[instruction]
 
     if instruction in ["CMP"] : S = 1 
     else: S = 0
 
-    if instruction == "ADD" or instruction == "SUB":
+    if instruction in ["ADD", "SUB", "AND", "ORR", "EOR"]:
         if len(parts) == 2: # ADD R0, R1 -> R0 += R1
             rd = register_to_number(parts[0].rstrip(","))
             rn = rd  # implicit
