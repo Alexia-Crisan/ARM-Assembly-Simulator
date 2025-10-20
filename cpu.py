@@ -1,6 +1,7 @@
 from typing import List
 from memory import Memory
-from decoder.decoder import execute_data_processing, execute_load_store, execute_branch
+from decoder.decoder import execute_data_processing, execute_load_store, execute_branch, execute_multiply_set
+from decoder.multiplication_set_decoder import is_multiply_set_instruction
 
 class CPU:
     def __init__(self, instruction_memory: Memory, data_memory: Memory):
@@ -38,6 +39,8 @@ class CPU:
         elif top3 == 0b101:  # Branch
             execute_branch(instruction, self)
             return
+        elif is_multiply_set_instruction(instruction):  # Multiply/Divide
+            execute_multiply_set(instruction, self)
         elif top2 == 0b00:  # Data processing
             execute_data_processing(instruction, self)
             self.regs[15] += 4
@@ -87,4 +90,3 @@ class CPU:
 
     def get_registers_dict(self):
         return {f"R{i}": val for i, val in enumerate(self.regs)}
-
