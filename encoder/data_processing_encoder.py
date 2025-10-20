@@ -1,5 +1,5 @@
 """
-Data processing (ADD, SUB, MOV): cond|00|I|opcode|S|Rn|Rd|operand2
+Data processing (ADD, SUB, MOV, CMP, AND, ORR, EOR): cond|00|I|opcode|S|Rn|Rd|operand2
 """
 
 from .helpers import register_to_number, encode_immediate_value, COND_ALWAYS, OPCODES
@@ -34,7 +34,7 @@ def encode_data_processing_instruction (instruction: str, parts: list) -> int:
     if instruction in ["ADD", "SUB", "AND", "ORR", "EOR", "MVN"]:
         if len(parts) == 2: # ADD R0, R1 -> R0 += R1
             rd = register_to_number(parts[0].rstrip(","))
-            rn = rd  # implicit
+            rn = rd
             op2 = parts[1]
         elif len(parts) == 3 and instruction != "MVN": # ADD R0, R1, R2 -> R0 = R1 + R2
             rd = register_to_number(parts[0].rstrip(","))
