@@ -38,3 +38,7 @@ def decode_data_processing_instruction(instruction: int, regs: list, flags: dict
         #flags['C'] = int(regs[rn_idx] >= val2)
     else:
         raise NotImplementedError(f"Opcode {opcode} not implemented")
+    
+def is_data_processing_instruction(instruction: int) -> bool:
+    top2 = (instruction >> 26) & 0b11  # bits [27:26]
+    return top2 == 0b00

@@ -25,3 +25,7 @@ def decode_branch(instruction: int, regs: list, flags: dict):
         regs[15] = target_address
     else:
         regs[15] += 4
+
+def is_branch_instruction(instruction: int) -> bool:
+    top3 = (instruction >> 25) & 0b111
+    return top3 == 0b101 

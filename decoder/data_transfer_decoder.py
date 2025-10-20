@@ -13,3 +13,7 @@ def decode_load_store(instruction: int, regs: list, memory: Memory):
         regs[rd_idx] = memory.read_word(addr)
     else:  # STR
         memory.write_word(addr, regs[rd_idx])
+
+def is_load_store_instruction(instruction: int) -> bool:
+    top2 = (instruction >> 26) & 0b11  # bits [27:26]
+    return top2 == 0b01

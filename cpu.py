@@ -2,6 +2,9 @@ from typing import List
 from memory import Memory
 from decoder.decoder import execute_data_processing, execute_load_store, execute_branch, execute_multiply_set
 from decoder.multiplication_set_decoder import is_multiply_set_instruction
+from decoder.branch_decoder import is_branch_instruction
+from decoder.data_processing_decoder import is_data_processing_instruction
+from decoder.data_transfer_decoder import is_load_store_instruction
 
 class CPU:
     def __init__(self, instruction_memory: Memory, data_memory: Memory):
@@ -36,16 +39,16 @@ class CPU:
 
         if instruction == 0xF0000000:  # HLT opcode
             self.halt_execution()
-        elif top3 == 0b101:  # Branch
+        elif is_branch_instruction(instruction):  # Branch
             execute_branch(instruction, self)
             return
         elif is_multiply_set_instruction(instruction):  # Multiply/Divide
             execute_multiply_set(instruction, self)
             self.regs[15] += 4
-        elif top2 == 0b00:  # Data processing
+        elif is_data_processing_instruction(instruction):  # Data processing
             execute_data_processing(instruction, self)
             self.regs[15] += 4
-        elif top2 == 0b01:  # Load/store
+        elif is_load_store_instruction(instruction):  # Load/store
             execute_load_store(instruction, self, self.data_memory)
             self.regs[15] += 4
         else:
