@@ -31,12 +31,12 @@ def encode_data_processing_instruction (instruction: str, parts: list) -> int:
     if instruction in ["CMP"] : S = 1 
     else: S = 0
 
-    if instruction in ["ADD", "SUB", "AND", "ORR", "EOR"]:
+    if instruction in ["ADD", "SUB", "AND", "ORR", "EOR", "MVN"]:
         if len(parts) == 2: # ADD R0, R1 -> R0 += R1
             rd = register_to_number(parts[0].rstrip(","))
             rn = rd  # implicit
             op2 = parts[1]
-        elif len(parts) == 3: # ADD R0, R1, R2 -> R0 = R1 + R2
+        elif len(parts) == 3 and instruction != "MVN": # ADD R0, R1, R2 -> R0 = R1 + R2
             rd = register_to_number(parts[0].rstrip(","))
             rn = register_to_number(parts[1].rstrip(","))
             op2 = parts[2]

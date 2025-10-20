@@ -1,6 +1,6 @@
         ; ============================================================
-        ; Test program for AND, SUB, ORR, EOR (2- and 3-operand forms)
-        ; Uses R0–R10
+        ; Test program for AND, SUB, ORR, EOR, MVN (2- and 3-operand forms)
+        ; Uses R0–R12
         ; Ends with HLT (halt simulation)
         ; ============================================================
 
@@ -28,6 +28,10 @@
         EOR     R5, R4, #0xAA    ; 01010000 XOR 10101010 = 11111010 (0xFA)
         EOR     R6, R5           ; 00000000 XOR 11111010 = 11111010 (0xFA)
         EOR     R7, #0xFF        ; 00001010 XOR 11111111 = 11110101 (0xF5)
+
+        ; ---------- MVN ----------
+        MVN R11, R0
+        MVN R12, #10
 
         ; ---------- Combined test ----------
         AND     R8, R9, R6       ; Bitwise AND

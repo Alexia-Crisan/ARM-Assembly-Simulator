@@ -26,6 +26,8 @@ def decode_data_processing_instruction(instruction: int, regs: list, flags: dict
         regs[rd_idx] = (regs[rn_idx] | val2) & 0xFFFFFFFF
     elif opcode == 0b0001:  # EOR
         regs[rd_idx] = (regs[rn_idx] ^ val2) & 0xFFFFFFFF
+    elif opcode == 0b1111:  # MVN
+        regs[rd_idx] = (~val2) & 0xFFFFFFFF
     elif opcode == 0b1101:  # MOV
         regs[rd_idx] = val2
     elif opcode == 0b1010:  # CMP

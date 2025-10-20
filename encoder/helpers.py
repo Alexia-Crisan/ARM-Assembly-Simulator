@@ -7,6 +7,7 @@ OPCODES = {
     "AND": 0b0000 << 21, # AND (logic and), Example: AND R0, R1, R2 -> R0 = R1 & R2
     "ORR": 0b1100 << 21, # ORR (logic or), Example: AND R0, R1, R2 -> R0 = R1 | R2
     "EOR": 0b0001 << 21, # XOR (exclusive or), , Example: EOR R0, R1, R2 -> R0 = R1 ^ R2
+    "MVN": 0b1111 << 21, # MVN (not), Example: MVN R0, R1 -> R0 = ~R1
 }
 
 # Condition codes (bits 31 - 28)
