@@ -41,7 +41,7 @@ def main():
     flags_dict = cpu.flags                                 
     instr_mem_list = cpu.dump_memory_as_list(cpu.instruction_memory, size = 256)
     data_mem_list = cpu.dump_memory_as_list(cpu.data_memory, size = 256)
-    visualize_cpu(registers_dict, flags_dict, instr_mem_list, data_mem_list)
+    visualize_cpu(registers_dict, flags_dict, instr_mem_list, data_mem_list, mem_rows = 12, mem_cols = 12)
 
 if __name__ == "__main__":
     main()
