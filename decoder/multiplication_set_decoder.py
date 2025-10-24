@@ -3,7 +3,6 @@ def decode_multiply_set(instruction: int, regs: list):
     Decode and execute MUL / DVI
     """
 
-    # Extract fields
     A  = (instruction >> 21) & 1   # 0 -> MUL, 1 -> DIV
     Rd = (instruction >> 16) & 0xF
     Rn = (instruction >> 12) & 0xF  # 0
@@ -15,7 +14,7 @@ def decode_multiply_set(instruction: int, regs: list):
     else:       # DIV
         if regs[Rs] == 0:
             raise ZeroDivisionError(f"Divide by zero: R{Rs}={regs[Rs]}")
-        regs[Rd] = (regs[Rm] // regs[Rs]) & 0xFFFFFFFF # integer division
+        regs[Rd] = (regs[Rm] // regs[Rs]) & 0xFFFFFFFF
 
 def is_multiply_set_instruction(instruction: int) -> bool:
         bits_27_22 = (instruction >> 22) & 0b111111
