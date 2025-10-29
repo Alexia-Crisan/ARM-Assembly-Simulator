@@ -51,11 +51,13 @@ def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) ->
         return encode_data_processing_instruction(instruction, args)
     if instruction in ("LDR", "STR"):
         return encode_load_store(instruction, args)
-    if instruction.startswith("B"):  # any branch
+    if instruction.startswith("B") or instruction in ["JMS", "RET"]:  # any branch
+        if instruction == "RET":
+            return encode_branch(instruction, None, current_place, labels)
         cond = BRANCH_COND_MAP.get(instruction.upper(), "AL")
-        if len(args) != 1:
+        if len(args) != 1 and instruction != "RET":
             raise ValueError(f"{instruction} takes a single label argument")
-        return encode_branch(args[0], current_place, labels, cond)
+        return encode_branch(instruction, args[0], current_place, labels, cond)
     if instruction in ["MUL", "DIV"]:
         return encode_multiply_or_div_instruction(instruction, args)
     if instruction in ["PSH", "PUSH", "POP"]:
