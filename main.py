@@ -39,9 +39,9 @@ def main():
     # 8. Visualize CPU state in a GUI
     registers_dict = cpu.get_registers_dict()            
     flags_dict = cpu.flags                                 
-    instr_mem_list = cpu.dump_memory_as_list(cpu.instruction_memory, size = 256)
+    instr_mem_list = cpu.dump_memory_as_list(cpu.instruction_memory, size = 512)
     data_mem_list = cpu.dump_memory_as_list(cpu.data_memory, size = 256)
-    visualize_cpu(registers_dict, flags_dict, instr_mem_list, data_mem_list, mem_rows = 10, mem_cols = 10)
+    visualize_cpu(registers_dict, flags_dict, instr_mem_list, data_mem_list, mem_rows = 12, mem_cols = 12)
 
 if __name__ == "__main__":
     main()

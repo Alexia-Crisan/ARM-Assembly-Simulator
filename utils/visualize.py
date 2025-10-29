@@ -1,3 +1,4 @@
+import math
 import tkinter as tk
 from tkinter import ttk
 
@@ -48,50 +49,53 @@ def visualize_cpu(registers, flags, instruction_memory, data_memory, mem_rows=16
     right_frame = tk.Frame(root, bg="#f0f0f0")
     right_frame.grid(row=0, column=1, padx=10, pady=10, sticky="n")
 
+    def draw_memory(frame, mem_list, rows, cols):
+        total_cells = len(mem_list)
+        for r in range(rows):
+            for c in range(cols):
+                addr = r * cols + c
+                if addr < total_cells:
+                    val = mem_list[addr]
+                    if val != 0:
+                        bg_color = "#cce6ff"  # light blue for used cells
+                    else:
+                        bg_color = "white"
+                    text = f"{val:08X}"
+                else:
+                    bg_color = "#e0e0e0"  # light grey for out of range
+                    text = "--"
+                tk.Label(
+                    frame,
+                    text=text,
+                    width=8,
+                    relief="solid",
+                    borderwidth=1,
+                    bg=bg_color,
+                    font=font_normal
+                ).grid(row=r, column=c, padx=1, pady=1)
+
+    instr_rows = min(mem_rows, math.ceil(len(instruction_memory) / mem_cols))
+    data_rows = min(mem_rows, math.ceil(len(data_memory) / mem_cols))
+
     # Instruction Memory (Dark Blue)
     instr_outer, instr_frame = colored_labelframe(right_frame, "Instruction Memory", "darkblue")
     instr_outer.pack(pady=5)
-    for r in range(mem_rows):
-        for c in range(mem_cols):
-            addr = r * mem_cols + c
-            if addr < len(instruction_memory) and instruction_memory[addr] != 0:
-                val = instruction_memory[addr]
-                bg_color = "#cce6ff"  # light blue for used cells
-            else:
-                val = 0
-                bg_color = "white"
-            cell = tk.Label(
-                instr_frame,
-                text=f"{val:08X}",
-                width=8,
-                relief="solid",
-                borderwidth=1,
-                bg=bg_color,
-                font=font_normal
-            )
-            cell.grid(row=r, column=c, padx=1, pady=1)
+    draw_memory(instr_frame, instruction_memory, instr_rows, mem_cols)
 
     # Data Memory (Dark Blue)
     data_outer, data_frame = colored_labelframe(right_frame, "Data Memory", "darkblue")
     data_outer.pack(pady=5)
-    for r in range(mem_rows):
-        for c in range(mem_cols):
-            addr = r * mem_cols + c
-            if addr < len(data_memory) and data_memory[addr] != 0:
-                val = data_memory[addr]
-                bg_color = "#cce6ff"
-            else:
-                val = 0
-                bg_color = "white"
-            cell = tk.Label(
-                data_frame,
-                text=f"{val:08X}",
-                width=8,
-                relief="solid",
-                borderwidth=1,
-                bg=bg_color,
-                font=font_normal
-            )
-            cell.grid(row=r, column=c, padx=1, pady=1)
+    draw_memory(data_frame, data_memory, data_rows, mem_cols)
+
+    # ------------------- Display dimensions -------------------
+    mem_info = tk.Label(
+        root,
+        text=f"Instruction memory: {len(instruction_memory)} words  |  "
+             f"Data memory: {len(data_memory)} words",
+        font=("Segoe UI", 9, "italic"),
+        bg="#f0f0f0",
+        fg="gray25"
+    )
+    mem_info.grid(row=1, column=0, columnspan=2, pady=5)
 
     root.mainloop()
