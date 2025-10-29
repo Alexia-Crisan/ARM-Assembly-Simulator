@@ -6,7 +6,7 @@ from utils.visualize import visualize_cpu
 
 def main():
     # 1. Read and clean source
-    source_lines = read_source("program_in/program_PSH_POP_verification.s")
+    source_lines = read_source("program_in/program_JMS_RET_verification.s")
     cleaned_lines = clean_lines(source_lines)
 
     # 2. Assemble

@@ -3,13 +3,20 @@ Branch (B): cond|101|L|offset24
 """
 
 from typing import Dict
-from .helpers import CONDITION_CODES
+from .helpers import CONDITION_CODES, COND_ALWAYS
 
 def encode_branch(instruction: str, label: str, current_place: int, labels: Dict[str, int], cond: str = "AL") -> int:
     
-    if instruction == "RET":
-        # MOV PC, LR = 0xE12FFF1E
-        return 0xE12FFF1E
+    if instruction.upper() == "RET":
+        # MOV PC, LR = cond|00|I|opcode|S|Rn|Rd|operand2
+        I = 0
+        opcode = 0b1101  # MOV
+        S = 0
+        rn = 0
+        rd = 15  # PC
+        rm = 14  # LR
+        machine_instruction = COND_ALWAYS | (0 << 26) | (I << 25) | (opcode << 21) | (S << 20) | (rn << 16) | (rd << 12) | rm
+        return machine_instruction 
     
     if label not in labels:
         raise ValueError(f"Unknown label: {label}")
