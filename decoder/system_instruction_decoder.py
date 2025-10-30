@@ -19,8 +19,6 @@ def decode_system_instruction(instruction: int, regs: list):
             val = 0
 
         regs[rd] = val & 0xFFFFFFFF
-        print(f"[INP] R{rd} <= {val}")
-
         regs[15] = (regs[15] + 4) & 0xFFFFFFFF
 
     elif opcode == 0b010: # OUT {Reg list}
@@ -30,7 +28,7 @@ def decode_system_instruction(instruction: int, regs: list):
 
         for r in range(16):
             if reg_mask & (1 << r):
-                print(f"R{r}={regs[r]}")
+                print(f"R{r} = {regs[r]};", end = " ")
     
         print()
 

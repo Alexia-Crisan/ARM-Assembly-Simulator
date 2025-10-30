@@ -22,4 +22,4 @@ def execute_stack_set(instruction: int, cpu, memory: Memory):
     decode_stack_instruction(instruction, cpu.regs, memory)
 
 def execute_system_instruction(instruction: int, cpu):
-    decode_system_instruction(instruction, cpu.regs)
+    return decode_system_instruction(instruction, cpu.regs)

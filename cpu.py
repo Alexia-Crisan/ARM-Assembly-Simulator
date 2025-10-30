@@ -43,6 +43,7 @@ class CPU:
             result = execute_system_instruction(instruction, self)
             if result == "HALT":
                 self.halt_execution()
+                return 
             return
         elif is_branch_instruction(instruction):  # Branch
             execute_branch(instruction, self)
