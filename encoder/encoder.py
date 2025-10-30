@@ -10,6 +10,7 @@ from .data_transfer_encoder import encode_load_store
 from .branch_encoder import encode_branch
 from .multiplication_set_encoder import encode_multiply_or_div_instruction
 from .stack_set_encoder import encode_stack_instruction
+from .system_instruction_encoder import encode_system_instruction
 from .helpers import OPCODES, BRANCH_COND_MAP
 
 def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) -> int:
@@ -62,7 +63,7 @@ def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) ->
         return encode_multiply_or_div_instruction(instruction, args)
     if instruction in ["PSH", "PUSH", "POP"]:
         return encode_stack_instruction(instruction, args)
-    if instruction == 'HLT':
-        return 0xF0000000
+    if instruction in ["HLT", "OUT", "INP"]:
+        return encode_system_instruction(instruction, args)
 
     raise ValueError(f"Unsupported instruction in this encoder: {instruction}")
