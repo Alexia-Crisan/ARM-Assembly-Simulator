@@ -4,6 +4,7 @@ from .data_transfer_decoder import decode_load_store
 from .branch_decoder import decode_branch
 from .multiplication_set_decoder import decode_multiply_set
 from .stack_set_decoder import decode_stack_instruction
+from .system_instruction_decoder import decode_system_instruction
 
 def execute_data_processing(instruction: int, cpu):
     decode_data_processing_instruction(instruction, cpu.regs, cpu.flags)
@@ -19,3 +20,6 @@ def execute_multiply_set(instruction: int, cpu):
 
 def execute_stack_set(instruction: int, cpu, memory: Memory):
     decode_stack_instruction(instruction, cpu.regs, memory)
+
+def execute_system_instruction(instruction: int, cpu):
+    decode_system_instruction(instruction, cpu.regs)

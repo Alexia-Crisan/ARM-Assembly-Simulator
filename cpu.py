@@ -1,11 +1,12 @@
 from typing import List
 from memory import Memory
-from decoder.decoder import execute_data_processing, execute_load_store, execute_branch, execute_multiply_set, execute_stack_set
+from decoder.decoder import execute_data_processing, execute_load_store, execute_branch, execute_multiply_set, execute_stack_set, execute_system_instruction
 from decoder.multiplication_set_decoder import is_multiply_set_instruction
 from decoder.branch_decoder import is_branch_instruction
 from decoder.data_processing_decoder import is_data_processing_instruction
 from decoder.data_transfer_decoder import is_load_store_instruction
 from decoder.stack_set_decoder import is_stack_set_instruction
+from decoder.system_instruction_decoder import is_system_instruction
 
 class CPU:
     def __init__(self, instruction_memory: Memory, data_memory: Memory):
@@ -38,8 +39,11 @@ class CPU:
             self.running = False
             return
 
-        if instruction == 0xF0000000:  # HLT opcode
-            self.halt_execution()
+        if is_system_instruction(instruction): # HLT, OUT, INP
+            result = execute_system_instruction(instruction, self)
+            if result == "HALT":
+                self.halt_execution()
+            return
         elif is_branch_instruction(instruction):  # Branch
             execute_branch(instruction, self)
             return
