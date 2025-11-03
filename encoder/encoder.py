@@ -11,6 +11,7 @@ from .branch_encoder import encode_branch
 from .multiplication_set_encoder import encode_multiply_or_div_instruction
 from .stack_set_encoder import encode_stack_instruction
 from .system_instruction_encoder import encode_system_instruction
+from .pseudo_instruction_encoder import encode__pseudo_instruction
 from .helpers import OPCODES, BRANCH_COND_MAP
 
 def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) -> int:
@@ -48,6 +49,8 @@ def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) ->
     instruction = tokens[0].upper()
     args = tokens[1:]
 
+    if instruction in ["INC", "DEC", "CLR"]:
+        return encode__pseudo_instruction(instruction, args)
     if instruction in OPCODES:
         return encode_data_processing_instruction(instruction, args)
     if instruction in ("LDR", "STR"):

@@ -1,6 +1,6 @@
 from .data_processing_encoder import encode_data_processing_instruction
 
-def encode_simple_pseudo(instruction: str, parts: list) -> int:
+def encode__pseudo_instruction(instruction: str, parts: list) -> int:
     """
     Encode pseudo-instructions: INC, DEC, CLR
     """
