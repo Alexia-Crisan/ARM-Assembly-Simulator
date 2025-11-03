@@ -49,7 +49,7 @@ def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) ->
     instruction = tokens[0].upper()
     args = tokens[1:]
 
-    if instruction in ["INC", "DEC", "CLR", "LSL", "LSR"]:
+    if instruction in ["INC", "DEC", "CLR", "LSL", "LSR", "MOD"]:
         return encode__pseudo_instruction(instruction, args)
     if instruction in OPCODES:
         return encode_data_processing_instruction(instruction, args)

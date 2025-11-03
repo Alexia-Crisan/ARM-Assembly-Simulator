@@ -73,5 +73,24 @@ def encode__pseudo_instruction(instruction: str, parts: list) -> int:
 
         seq.append(encode_stack_instruction("POP", [f"{temp}"]))
         return seq
+    
+    elif instruction == "MOD":
+        if len(parts) != 3:
+            raise ValueError("Syntax: MOD Rd, Rn, Rm")
+        
+        rd = parts[0].rstrip(",")
+        rn = parts[1].rstrip(",")
+        rm = parts[2]
+
+        temp = "R12"
+        seq = []
+        seq.append(encode_stack_instruction("PUSH", [f"{{{temp}}}"]))
+
+        seq.append(encode_multiply_or_div_instruction("DIV", [temp, rn, rm]))
+        seq.append(encode_multiply_or_div_instruction("MUL", [temp, temp, rm]))
+        seq.append(encode_data_processing_instruction("SUB", [rd, rn, temp]))
+        
+        seq.append(encode_stack_instruction("POP", [f"{{{temp}}}"]))
+        return seq
 
     return None

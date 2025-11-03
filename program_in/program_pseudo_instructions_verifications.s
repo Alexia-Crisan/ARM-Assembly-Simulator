@@ -24,5 +24,11 @@
 
     OUT {R2, R4}
 
+; ----- MOD: R7 = R5 % R3 -----
+    MOV R5, #17
+    MOV R3, #5
+    MOD R7, R5, R3       ; R7 = 17 % 5 = 2
+
+    OUT {R5, R3, R7}
 
     HLT
