@@ -1,6 +1,6 @@
     MOV R5, #5
     MOV R6, #7
-    MOV R12, #3
+    MOV R12, #6
 
 ; ----- INC / DEC / CLR -----
     INC R5              ; R5 = 6
