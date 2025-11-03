@@ -49,7 +49,12 @@ def assemble_to_machine_code(lines: List[str]) -> List[int]:
     program_counter = 0
     for line in instructions:
         code = encode_instruction(line, program_counter, labels)
-        machine_codes.append(code)
-        program_counter += 4
+        
+        if isinstance(code, list):
+            machine_codes.extend(code)
+            program_counter += len(code) * 4
+        else:
+            machine_codes.append(code)
+            program_counter += 4
 
     return machine_codes
