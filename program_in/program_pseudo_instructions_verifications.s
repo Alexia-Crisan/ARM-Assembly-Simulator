@@ -29,6 +29,12 @@
     MOV R3, #5
     MOD R7, R5, R3       ; R7 = 17 % 5 = 2
 
+; ----- SWAP -----
+    MOV R8, #15
+    MOV R9, #1
+    SWAP R8, R9
+    SWP R9, R8
+
     OUT {R5, R3, R7}
 
     HLT
