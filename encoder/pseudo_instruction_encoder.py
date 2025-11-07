@@ -110,7 +110,6 @@ def encode__pseudo_instruction(instruction: str, parts: list) -> int:
         seq.append(encode_data_processing_instruction("MOV", [rm, temp]))
 
         seq.append(encode_stack_instruction("POP", [f"{{{temp}}}"]))
-
-    return seq
+        return seq
 
     return None
