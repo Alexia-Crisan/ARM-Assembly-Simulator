@@ -18,10 +18,10 @@ Together, these components form a lightweight yet realistic model of an ARM-styl
 
 ## Features
 
-- 🧮 **Data Processing Instructions** – `MOV`, `ADD`, `SUB`, `CMP`, `AND`, `ORR`, `EOR`, `MVN`
-- 🧱 **Stack Operations** – `PUSH`, `POP` using R13 (SP)
-- 💾 **Data Transfer Instructions** – `LDR`, `STR`
-- 🔁 **Branching** – `B`, `BL`, `RET`, `BEQ`, `BNE`, etc.
-- ⚙️ **System Instructions** – `HLT`, `INP`, `OUT`
-- 💡 **Pseudo-Instructions** – `INC`, `DEC`, `CLR`, `LSL`, `LSR`, `MOD`, `SWAP`
-- 🧰 **Debug Tools** – memory dump, register dump, and visualization helpers
+- **Data Processing Instructions** – `MOV`, `ADD`, `SUB`, `CMP`, `AND`, `ORR`, `EOR`, `MVN`
+- **Stack Operations** – `PUSH`, `POP` using R13 (SP)
+- **Data Transfer Instructions** – `LDR`, `STR`
+- **Branching** – `B`, `BL`, `RET`, `BEQ`, `BNE`, etc.
+- **System Instructions** – `HLT`, `INP`, `OUT`
+- **Pseudo-Instructions** – `INC`, `DEC`, `CLR`, `LSL`, `LSR`, `MOD`, `SWAP`
+- **Debug Tools** – memory dump, register dump, and visualization helpers
