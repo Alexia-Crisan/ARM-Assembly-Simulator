@@ -12,7 +12,7 @@ It includes all major stages of the instruction pipeline - from assembly transla
 - **Memory Module** – Provides byte-addressable read/write access for both program and data segments, including stack management.
 - **System Interface** – Handles input/output operations (`INP`, `OUT`) and program termination (`HLT`), enabling simple interaction with the simulated environment.
 
-Together, these components form a lightweight yet realistic model of an ARM-style architecture — ideal for understanding low-level computation, instruction encoding, and CPU execution flow.
+Together, these components form a lightweight yet realistic model of an ARM-style architecture - ideal for understanding low-level computation, instruction encoding, and CPU execution flow.
 
 ---
 
@@ -25,3 +25,15 @@ Together, these components form a lightweight yet realistic model of an ARM-styl
 - **System Instructions** – `HLT`, `INP`, `OUT`
 - **Pseudo-Instructions** – `INC`, `DEC`, `CLR`, `LSL`, `LSR`, `MOD`, `SWAP`
 - **Debug Tools** – memory dump, register dump, and visualization helpers
+
+## Local Interface
+
+The local Tkinter-based interface provides a standalone desktop environment with a responsive code editor and real-time visualization of registers, flags, and memory, ideal for offline use and hands-on exploration of assembly execution.
+
+![Simulator](Pics/2.png)
+
+## Web Interface
+
+The web interface offers the same functionality as the desktop version, providing an intuitive, browser-based environment where users can write, assemble, and visualize ARM programs.
+
+![Simulator](Pics/1.png)
