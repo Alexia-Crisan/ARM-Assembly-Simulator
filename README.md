@@ -26,11 +26,15 @@ Together, these components form a lightweight yet realistic model of an ARM-styl
 - **Pseudo-Instructions** – `INC`, `DEC`, `CLR`, `LSL`, `LSR`, `MOD`, `SWAP`
 - **Debug Tools** – memory dump, register dump, and visualization helpers
 
+---
+
 ## Local Interface
 
 The local Tkinter-based interface provides a standalone desktop environment with a responsive code editor and real-time visualization of registers, flags, and memory, ideal for offline use and hands-on exploration of assembly execution.
 
 ![Simulator](Pics/2.png)
+
+---
 
 ## Web Interface
 
