@@ -40,4 +40,7 @@ The local Tkinter-based interface provides a standalone desktop environment with
 
 The web interface offers the same functionality as the desktop version, providing an intuitive, browser-based environment where users can write, assemble, and visualize ARM programs.
 
+You can try the simulator directly in your browser here:  
+**[ARM Assembly Simulator Online](https://arm-assembly-simulator.onrender.com/)**
+
 ![Simulator](Pics/1.png)
