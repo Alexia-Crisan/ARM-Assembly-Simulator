@@ -28,7 +28,6 @@ function renderResults(data) {
 
   let html = `<div class='section'><h3>Registers (after ${steps} instructions)</h3><table>`;
 
-  // Sort registers numerically
   const sortedRegs = Object.entries(registers).sort((a, b) => {
     const na = parseInt(a[0].replace(/\D/g, "")) || 0;
     const nb = parseInt(b[0].replace(/\D/g, "")) || 0;
