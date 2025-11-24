@@ -6,7 +6,7 @@ from utils.visualize import visualize_cpu
 
 def main():
     # 1. Read and clean source
-    source_lines = read_source("program_in/program_pseudo_instructions_verifications.s")
+    source_lines = read_source("program_in/program_LOOP_pseudo.s")
     cleaned_lines = clean_lines(source_lines)
 
     # 2. Assemble

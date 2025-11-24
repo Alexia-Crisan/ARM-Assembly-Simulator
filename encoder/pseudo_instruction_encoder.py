@@ -1,8 +1,10 @@
+from typing import Dict, List, Union, Optional
 from .data_processing_encoder import encode_data_processing_instruction
 from .multiplication_set_encoder import encode_multiply_or_div_instruction
 from .stack_set_encoder import encode_stack_instruction
+from .branch_encoder import encode_branch
 
-def encode__pseudo_instruction(instruction: str, parts: list) -> int:
+def encode__pseudo_instruction(instruction: str, parts: list, current_place: int, labels: Dict[str, int]) -> int:
     """
     Encode pseudo-instructions: INC, DEC, CLR
     """
@@ -110,6 +112,23 @@ def encode__pseudo_instruction(instruction: str, parts: list) -> int:
         seq.append(encode_data_processing_instruction("MOV", [rm, temp]))
 
         seq.append(encode_stack_instruction("POP", [f"{{{temp}}}"]))
+        return seq
+    
+    elif instruction == "LOOP":
+        if len(parts) != 1:
+            raise ValueError("Syntax: LOOP label")
+        
+        if current_place is None or labels is None:
+            raise ValueError("LOOP requires current_place and labels")
+
+        label = parts[0]
+        cx = "R12"
+        seq = []
+
+        seq.append(encode_data_processing_instruction("SUB", [cx, "#1"]))
+        seq.append(encode_data_processing_instruction("CMP", [cx, "#0"]))
+        seq.append(encode_branch("B", label, current_place + 8, labels, "NE"))
+    
         return seq
 
     return None
