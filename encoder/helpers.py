@@ -52,6 +52,6 @@ def encode_immediate_value(immediate_value: int) -> int:
         rotate = rot * 2
         val = ((immediate_value >> rotate) | ((immediate_value << (32 - rotate)) & 0xFFFFFFFF)) & 0xFFFFFFFF # rotate right by rotate
         if val <= 0xFF:
-            return (rotate << 8) | (val & 0xFF)
+            return (rot << 8) | (val & 0xFF)
 
     raise ValueError(f"Immediate 0x{immediate_value:X} cannot be encoded in ARM rotate form")
