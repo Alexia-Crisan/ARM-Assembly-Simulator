@@ -1,0 +1,5 @@
+INP R0
+INP R1
+
+OUT {R0, R1}
+HLT
