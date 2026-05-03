@@ -37,18 +37,31 @@ textarea {
 }
 
 button {
-  background: #ffb74d;
-  color: black;
-  border: none;
+  color: #1e1e1e;
+  background: #00ff9c;
+  border: 2px solid #00ff9c;
   padding: 10px 20px;
   margin: 5px;
   font-weight: bold;
   cursor: pointer;
   border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
 button:hover {
-  background: #ffcc80;
+  color: #00ff9c;
+  background: #1e1e1e;
+}
+
+.doc-btn {
+  background: #1e1e1e;
+  color: #00ff9c;
+  border: 2px solid #00ff9c;
+}
+
+.doc-btn:hover {
+  background: #00ff9c;
+  color: black;
 }
 
 .section {
@@ -70,7 +83,7 @@ th {
 
 th {
   background: #333;
-  color: #ffb74d;
+  color: #00ff9c;
 }
 
 .error-box {
@@ -83,11 +96,11 @@ th {
 
 h2,
 h3 {
-  color: #ffb74d;
+  color: #00ff9c;
   margin-top: 10px;
   margin-bottom: 8px;
 }
 
 #editor {
-  border-right: 2px solid #ffb74d;
+  border-right: 2px solid #00ff9c;
 }

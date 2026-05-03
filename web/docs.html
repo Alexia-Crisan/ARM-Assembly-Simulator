@@ -1,0 +1,174 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Instruction Reference</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div style="padding: 20px; max-width: 1000px; margin: auto">
+      <h2>ARM Assembly Simulator – Instruction Reference</h2>
+
+      <p>
+        This simulator supports a simplified ARM-like instruction set, including
+        core instructions, memory operations, branching, stack manipulation, and
+        pseudo-instructions.
+      </p>
+
+      <hr />
+
+      <h3>Data Processing Instructions</h3>
+
+      <b>MOV – Move</b>
+      <ul>
+        <li>MOV Rd, #imm → Rd = imm</li>
+        <li>MOV Rd, Rn → Rd = Rn</li>
+      </ul>
+
+      <b>ADD – Addition</b>
+      <ul>
+        <li>ADD Rd, Rn, Rm → Rd = Rn + Rm</li>
+        <li>ADD Rd, Rn, #imm → Rd = Rn + imm</li>
+        <li>ADD Rd, Rm → Rd = Rd + Rm</li>
+      </ul>
+
+      <b>SUB – Subtraction</b>
+      <ul>
+        <li>SUB Rd, Rn, Rm → Rd = Rn - Rm</li>
+        <li>SUB Rd, Rn, #imm → Rd = Rn - imm</li>
+        <li>SUB Rd, Rm → Rd = Rd - Rm</li>
+      </ul>
+
+      <b>CMP – Compare</b>
+      <ul>
+        <li>CMP Rn, Rm</li>
+        <li>CMP Rn, #imm</li>
+        <li>Updates flags only (no result stored)</li>
+      </ul>
+
+      <b>Logical Operations</b>
+      <ul>
+        <li>AND Rd, Rn, Rm</li>
+        <li>ORR Rd, Rn, Rm</li>
+        <li>EOR Rd, Rn, Rm</li>
+        <li>MVN Rd, Rm → Rd = NOT Rm</li>
+      </ul>
+
+      <hr />
+
+      <h3>Memory Instructions</h3>
+
+      <b>LDR – Load</b>
+      <ul>
+        <li>LDR Rd, [Rn]</li>
+        <li>LDR Rd, [Rn, #offset]</li>
+      </ul>
+
+      <b>STR – Store</b>
+      <ul>
+        <li>STR Rd, [Rn]</li>
+        <li>STR Rd, [Rn, #offset]</li>
+      </ul>
+
+      <hr />
+
+      <h3>Stack Instructions</h3>
+
+      <b>PUSH</b>
+      <ul>
+        <li>PUSH {Rlist}</li>
+        <li>Decrements SP and stores registers</li>
+      </ul>
+
+      <b>POP</b>
+      <ul>
+        <li>POP {Rlist}</li>
+        <li>Loads registers and increments SP</li>
+      </ul>
+
+      <hr />
+
+      <h3>Branch Instructions</h3>
+
+      <ul>
+        <li>B label → unconditional jump</li>
+        <li>BL label → jump + save return address (LR)</li>
+        <li>RET → return (PC = LR)</li>
+      </ul>
+
+      <b>Conditional branches:</b>
+      <ul>
+        <li>BEQ → if Z == 1</li>
+        <li>BNE → if Z == 0</li>
+        <li>BGT → if Z == 0 and N == V</li>
+        <li>BLT → if N != V</li>
+        <li>BGE → if N == V</li>
+        <li>BLE → if Z == 1 or N != V</li>
+      </ul>
+
+      <hr />
+
+      <h3>Multiply / Divide</h3>
+
+      <ul>
+        <li>MUL Rd, Rm, Rs → Rd = Rm * Rs</li>
+        <li>DIV Rd, Rm, Rs → Rd = Rm / Rs</li>
+      </ul>
+
+      <hr />
+
+      <h3>System Instructions</h3>
+
+      <ul>
+        <li>HLT → stop execution</li>
+        <li>INP Rd → read input into register</li>
+        <li>OUT {Rlist} → print registers</li>
+      </ul>
+
+      <hr />
+
+      <h3>Pseudo-Instructions</h3>
+
+      <b>Simple:</b>
+      <ul>
+        <li>INC Rd → ADD Rd, Rd, #1</li>
+        <li>DEC Rd → SUB Rd, Rd, #1</li>
+        <li>CLR Rd → MOV Rd, #0</li>
+      </ul>
+
+      <b>Shift operations:</b>
+      <ul>
+        <li>LSL Rd, Rn, #imm → Rd = Rn × (2^imm)</li>
+        <li>LSR Rd, Rn, #imm → Rd = Rn / (2^imm)</li>
+      </ul>
+
+      <b>Advanced:</b>
+      <ul>
+        <li>MOD Rd, Rn, Rm → Rd = Rn % Rm</li>
+        <li>SWAP Rn, Rm → swap values</li>
+        <li>LOOP label → counted loop using R12</li>
+      </ul>
+
+      <hr />
+
+      <h3>Full Documentation</h3>
+
+      <p>For full architecture, encoding details, and implementation:</p>
+
+      <p>
+        <a
+          style="color: white"
+          href="/Documentation_ARM_Assembly_Simulator.pdf"
+          target="_blank"
+        >
+          Open Full PDF Documentation
+        </a>
+      </p>
+
+      <br />
+
+      <button onclick="window.location.href = '/'">⬅ Back to Simulator</button>
+    </div>
+  </body>
+</html>

@@ -64,6 +64,9 @@ def run_program():
 def reset():
     return jsonify({"message": "Simulator reset"})
 
+@app.route("/docs.html")
+def serve_docs():
+    return send_from_directory(app.static_folder, "docs.html")
 
 if __name__ == "__main__":
     import os

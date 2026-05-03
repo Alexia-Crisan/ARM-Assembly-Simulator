@@ -66,3 +66,7 @@ function renderResults(data) {
 
   document.getElementById("results").innerHTML = html;
 }
+
+function goToDocs() {
+  window.location.href = "/docs.html";
+}
