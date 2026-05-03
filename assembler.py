@@ -39,6 +39,8 @@ def assemble_to_machine_code(lines: List[str]) -> List[int]:
     for line in lines:
         if line.endswith(":"):            
             label = line[ : -1].strip()
+            if label in labels:
+                raise ValueError(f"Duplicate label: '{label}'")
             labels[label] = program_counter # label points to current program_counter address
         else:
             instructions.append(line)
@@ -47,6 +49,7 @@ def assemble_to_machine_code(lines: List[str]) -> List[int]:
     # encode each instruction
     machine_codes: List[int] = []
     program_counter = 0
+    
     for line in instructions:
         code = encode_instruction(line, program_counter, labels)
         

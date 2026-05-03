@@ -51,10 +51,13 @@ def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) ->
 
     if instruction in ["INC", "DEC", "CLR", "LSL", "LSR", "MOD", "SWAP", "SWP", "LOOP"]:
         return encode__pseudo_instruction(instruction, args, current_place, labels)
+    
     if instruction in OPCODES:
         return encode_data_processing_instruction(instruction, args)
+    
     if instruction in ("LDR", "STR"):
         return encode_load_store(instruction, args)
+    
     if instruction.startswith("B") or instruction in ["JMS", "RET"]:  # any branch
         if instruction == "RET":
             return encode_branch(instruction, None, current_place, labels)
@@ -62,10 +65,13 @@ def encode_instruction(line: str, current_place: int, labels: Dict[str, int]) ->
         if len(args) != 1 and instruction != "RET":
             raise ValueError(f"{instruction} takes a single label argument")
         return encode_branch(instruction, args[0], current_place, labels, cond)
+    
     if instruction in ["MUL", "DIV"]:
         return encode_multiply_or_div_instruction(instruction, args)
+    
     if instruction in ["PSH", "PUSH", "POP"]:
         return encode_stack_instruction(instruction, args)
+    
     if instruction in ["HLT", "OUT", "INP"]:
         return encode_system_instruction(instruction, args)
 

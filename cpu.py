@@ -15,7 +15,7 @@ class CPU:
         self.running = False
 
         self.regs[15] = 0   # PC starts at 0
-        self.regs[13] = memory.data_base + memory.data_size - 4   # SP starts at end of data memor
+        self.regs[13] = memory.data_base + memory.data_size   # SP starts at end of data memor
 
         # Flags
         self.flags = {
@@ -38,29 +38,41 @@ class CPU:
             self.running = False
             return
 
+        # execute instuctions
         if is_system_instruction(instruction): # HLT, OUT, INP
             result = execute_system_instruction(instruction, self)
             if result == "HALT":
                 self.halt_execution()
-                return 
             return
-        elif is_branch_instruction(instruction):  # Branch
+        
+        if is_branch_instruction(instruction):  # Branch
             execute_branch(instruction, self)
             return
-        elif is_multiply_set_instruction(instruction):  # Multiply/Divide
+        
+        if is_multiply_set_instruction(instruction):  # Multiply/Divide
             execute_multiply_set(instruction, self)
             self.regs[15] += 4
-        elif is_data_processing_instruction(instruction):  # Data processing
+            return
+
+        if is_data_processing_instruction(instruction):  # Data processing
             execute_data_processing(instruction, self)
-            self.regs[15] += 4
-        elif is_load_store_instruction(instruction):  # Load/store
+            # If the instruction wrote to PC (e.g. RET = MOV PC, LR), don't add the normal +4 - the destination register is already the new PC
+            rd = (instruction >> 12) & 0xF
+            if rd != 15:
+                self.regs[15] += 4
+            return
+
+        if is_load_store_instruction(instruction):  # Load/store
             execute_load_store(instruction, self, self.memory)
             self.regs[15] += 4
-        elif is_stack_set_instruction(instruction): # Push/pop
+            return
+        
+        if is_stack_set_instruction(instruction): # Push/pop
             execute_stack_set(instruction, self, self.memory)
             self.regs[15] += 4
-        else:
-            raise NotImplementedError(f"Unsupported instruction format!")
+            return 
+        
+        raise NotImplementedError(f"Unsupported instruction format!")
 
     def halt_execution(self):
         print("Execution halted.")

@@ -33,10 +33,17 @@ BRANCH_COND_MAP = {
     "BLE": "LE",
 }
 
-def register_to_number(reg: str) -> int: #R2 -> 2
-    if not reg.upper().startswith("R"):
-        raise ValueError(f"Expected register like Rnum, got: {reg}")
-    return int(reg[1:])
+def register_to_number(reg: str) -> int:
+    reg = reg.strip().upper()
+
+    if not reg.startswith("R"):
+        raise ValueError(f"Expected register like Rn, got: {reg}")
+    
+    n = int(reg[1:])
+    if not (0 <= n <= 15):
+        raise ValueError(f"Register number out of range 0-15: {reg}")
+    
+    return n
 
 # immediate values are stored in 12 bits instead of 32: |rot|immediate_value(8 bits)| -> |11..8|7..0|
 # immediate_value_32_bits = ROR(immediate_value_8_bits, 2 * rotate), ROR = right rotate
@@ -50,8 +57,7 @@ def encode_immediate_value(immediate_value: int) -> int:
     # try rotate right to make immediate_value fit in 8 bits
     for rot in range(1, 16):
         rotate = rot * 2
-        val = ((immediate_value >> rotate) | ((immediate_value << (32 - rotate)) & 0xFFFFFFFF)) & 0xFFFFFFFF # rotate right by rotate
-        if val <= 0xFF:
-            return (rot << 8) | (val & 0xFF)
-
+        rotated_left = ((immediate_value << rotate) | (immediate_value >> (32 - rotate))) & 0xFFFFFFFF
+        if rotated_left <= 0xFF:
+            return (rot << 8) | rotated_left
     raise ValueError(f"Immediate 0x{immediate_value:X} cannot be encoded in ARM rotate form")

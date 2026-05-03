@@ -68,12 +68,9 @@ def encode__pseudo_instruction(instruction: str, parts: list, current_place: int
         temp = "R12"
         seq = []
 
-        seq.append(encode_stack_instruction("PUSH", [f"{temp}"]))
-
         seq.append(encode_data_processing_instruction("MOV", [temp, f"#{imm}"]))
         seq.append(encode_multiply_or_div_instruction("DIV", [rd, rn, temp]))
 
-        seq.append(encode_stack_instruction("POP", [f"{temp}"]))
         return seq
     
     elif instruction == "MOD":
@@ -86,13 +83,11 @@ def encode__pseudo_instruction(instruction: str, parts: list, current_place: int
 
         temp = "R12"
         seq = []
-        seq.append(encode_stack_instruction("PUSH", [f"{{{temp}}}"]))
 
         seq.append(encode_multiply_or_div_instruction("DIV", [temp, rn, rm]))
         seq.append(encode_multiply_or_div_instruction("MUL", [temp, temp, rm]))
         seq.append(encode_data_processing_instruction("SUB", [rd, rn, temp]))
         
-        seq.append(encode_stack_instruction("POP", [f"{{{temp}}}"]))
         return seq
 
     elif instruction == "SWAP" or instruction == "SWP":
@@ -105,13 +100,10 @@ def encode__pseudo_instruction(instruction: str, parts: list, current_place: int
         temp = "R12"
         seq = []
 
-        seq.append(encode_stack_instruction("PUSH", [f"{{{temp}}}"]))
-
         seq.append(encode_data_processing_instruction("MOV", [temp, rn]))
         seq.append(encode_data_processing_instruction("MOV", [rn, rm]))
         seq.append(encode_data_processing_instruction("MOV", [rm, temp]))
 
-        seq.append(encode_stack_instruction("POP", [f"{{{temp}}}"]))
         return seq
     
     elif instruction == "LOOP":
