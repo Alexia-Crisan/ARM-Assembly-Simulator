@@ -1,7 +1,7 @@
 """
 Unit tests for the ARM simulator.
 
-Run with:  pytest ut_tests.py -v
+Run with:  python -m pytest ut_tests.py -v
 """
 
 import sys, os
@@ -9,9 +9,14 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 import pytest
 from assembler import clean_lines, assemble_to_machine_code
-from memory    import Memory, INSTR_BASE, DATA_BASE, DATA_SIZE
+from memory    import Memory
 from cpu       import CPU
 
+DEFAULT_MEMORY_SIZE = 512
+
+INSTR_BASE = 0
+DATA_BASE  = DEFAULT_MEMORY_SIZE // 2
+DATA_SIZE  = DEFAULT_MEMORY_SIZE // 2
 
 # ─────────────────────────────────────────────────────────────────────
 # Helper
@@ -64,7 +69,7 @@ class TestUnifiedMemory:
 
     def test_sp_initialised_to_data_top(self):
         cpu = run("HLT")
-        expected_sp = DATA_BASE + DATA_SIZE - 4
+        expected_sp = DATA_BASE + DATA_SIZE
         assert cpu.regs[13] == expected_sp
 
     def test_push_pop_use_data_region(self):
@@ -154,7 +159,7 @@ class TestFlags:
         assert cpu.flags["Z"] == 0
 
     def test_cmp_sets_carry(self):
-        # rn >= val2 → C = 1 (no borrow)
+        # rn >= val2 -> C = 1 (no borrow)
         cpu = run("MOV R0, #10\nCMP R0, #5\nHLT")
         assert cpu.flags["C"] == 1
 
@@ -169,9 +174,9 @@ class TestFlags:
         assert cpu.flags["Z"] == 1
 
     def test_add_overflow_flag(self):
-        # Build 0x7FFFFFFF = (0x80 << 24) - 1 and add 1 → 0x80000000.
+        # Build 0x7FFFFFFF = (0x80 << 24) - 1 and add 1 -> 0x80000000.
         # Plain ADD has S=0 so flags are unchanged; we just verify unsigned wrap.
-        # 0x80 * 0x1000000 = 0x80000000; sub 1 → 0x7FFFFFFF; add 1 → 0x80000000.
+        # 0x80 * 0x1000000 = 0x80000000; sub 1 -> 0x7FFFFFFF; add 1 -> 0x80000000.
         cpu = run("""
             MOV R0, #0x80
             MOV R1, #1

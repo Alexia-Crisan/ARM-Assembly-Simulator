@@ -44,12 +44,9 @@ def encode__pseudo_instruction(instruction: str, parts: list, current_place: int
         temp = "R12"
         seq = []
 
-        seq.append(encode_stack_instruction("PUSH", [f"{temp}"]))
-
         seq.append(encode_data_processing_instruction("MOV", [temp, f"#{imm}"]))
         seq.append(encode_multiply_or_div_instruction("MUL", [rd, rn, temp]))
 
-        seq.append(encode_stack_instruction("POP", [f"{temp}"]))
         return seq
 
     elif instruction == "LSR":
