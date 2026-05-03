@@ -9,14 +9,13 @@ from decoder.stack_set_decoder import is_stack_set_instruction
 from decoder.system_instruction_decoder import is_system_instruction
 
 class CPU:
-    def __init__(self, instruction_memory: Memory, data_memory: Memory):
+    def __init__(self, memory: Memory):
         self.regs: List[int] = [0] * 16  # r0 to r15 (r15 = program_counter)
-        self.instruction_memory = instruction_memory
-        self.data_memory = data_memory
+        self.memory  = memory
         self.running = False
 
-        self.regs[15] = 0                  # PC starts at 0
-        self.regs[13] = data_memory.size   # SP starts at end of data memor
+        self.regs[15] = 0   # PC starts at 0
+        self.regs[13] = memory.data_base + memory.data_size - 4   # SP starts at end of data memor
 
         # Flags
         self.flags = {
@@ -30,7 +29,7 @@ class CPU:
         pc = self.regs[15]
 
         try:
-            instruction = self.instruction_memory.read_word(pc)
+            instruction = self.memory.read_word(pc)
         except MemoryError:
             self.running = False
             return
@@ -55,10 +54,10 @@ class CPU:
             execute_data_processing(instruction, self)
             self.regs[15] += 4
         elif is_load_store_instruction(instruction):  # Load/store
-            execute_load_store(instruction, self, self.data_memory)
+            execute_load_store(instruction, self, self.memory)
             self.regs[15] += 4
         elif is_stack_set_instruction(instruction): # Push/pop
-            execute_stack_set(instruction, self, self.data_memory)
+            execute_stack_set(instruction, self, self.memory)
             self.regs[15] += 4
         else:
             raise NotImplementedError(f"Unsupported instruction format!")
