@@ -36,10 +36,6 @@ def main():
     # cpu.dump_memory(cpu.memory, start = 0, end = 64, name = "Data Memory")
 
     # 8. Visualize CPU state in a GUI
-    registers_dict = cpu.get_registers_dict()            
-    flags_dict = cpu.flags                                 
-    instr_mem_list = cpu.dump_memory_as_list(cpu.memory, size = 512)
-    data_mem_list = cpu.dump_memory_as_list(cpu.memory, size = 256)
     visualize_cpu(
         registers = cpu.get_registers_dict(),
         flags     = cpu.flags,

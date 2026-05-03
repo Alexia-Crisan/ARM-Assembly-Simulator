@@ -34,16 +34,15 @@ def run_program():
     except Exception as e:
         return jsonify({"error": f"Assembler error: {e}"}), 400
 
-    instruction_memory = Memory(1024 * 4)
-    data_memory = Memory(64 * 4)
+    memory = Memory(size=512)
 
     try:
         program_bytes = b''.join(int(x).to_bytes(4, "big", signed=False) for x in machine_code)
-        instruction_memory.load_bytes(program_bytes, start_addr=0)
+        memory.load_bytes(program_bytes, start_addr=0)
     except Exception as e:
         return jsonify({"error": f"Memory load error: {e}"}), 400
 
-    cpu = CPU(instruction_memory, data_memory)
+    cpu = CPU(memory)
     try:
         steps = cpu.run(max_steps=200)
     except Exception as e:
@@ -51,15 +50,13 @@ def run_program():
 
     registers = cpu.get_registers_dict()
     flags = cpu.flags
-    instr_mem = cpu.dump_memory_as_list(instruction_memory, size=512)
-    data_mem = cpu.dump_memory_as_list(data_memory, size=256)
 
     return jsonify({
         "steps": steps - 1,
         "registers": registers,
         "flags": flags,
-        "instruction_memory": instr_mem,
-        "data_memory": data_mem
+        "instruction_memory": cpu.memory.dump_instruction_region(),
+        "data_memory": cpu.memory.dump_data_region()
     })
 
 

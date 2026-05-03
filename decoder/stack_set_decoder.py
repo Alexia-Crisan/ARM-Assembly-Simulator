@@ -17,7 +17,7 @@ def decode_stack_instruction(instruction: int, regs: list, memory):
                 memory.write_word(sp, regs[reg_num])
         regs[sp_index] = sp
     else:
-        for reg_num in range(16):
+        for reg_num in range(15):
             if reg_list & (1 << reg_num):
                 regs[reg_num] = memory.read_word(sp)
                 sp += 4

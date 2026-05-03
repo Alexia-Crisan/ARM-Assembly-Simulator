@@ -20,29 +20,44 @@ def decode_data_processing_instruction(instruction: int, regs: list, flags: dict
     rn_val = regs[rn_idx] & 0xFFFFFFFF
     
     if opcode == 0b0100:  # ADD
-        regs[rd_idx] = (regs[rn_idx] + val2) & 0xFFFFFFFF
+        result = (rn_val + val2) & 0xFFFFFFFF
+        regs[rd_idx] = result
         if S: update_flags(flags, result, rn_val, val2, "add")
+
     elif opcode == 0b0010:  # SUB
-        regs[rd_idx] = (regs[rn_idx] - val2) & 0xFFFFFFFF
+        result = (rn_val - val2) & 0xFFFFFFFF
+        regs[rd_idx] = result
         if S: update_flags(flags, result, rn_val, val2, "sub")
+
     elif opcode == 0b0000:  # AND
-        regs[rd_idx] = (regs[rn_idx] & val2) & 0xFFFFFFFF
+        result = (rn_val & val2) & 0xFFFFFFFF
+        regs[rd_idx] = result
         if S: update_flags(flags, result, rn_val, val2, "logic")
+
     elif opcode == 0b1100:  # ORR
-        regs[rd_idx] = (regs[rn_idx] | val2) & 0xFFFFFFFF
+        result = (rn_val | val2) & 0xFFFFFFFF
+        regs[rd_idx] = result
         if S: update_flags(flags, result, rn_val, val2, "logic")
+
     elif opcode == 0b0001:  # EOR
-        regs[rd_idx] = (regs[rn_idx] ^ val2) & 0xFFFFFFFF
+        result = (rn_val ^ val2) & 0xFFFFFFFF
+        regs[rd_idx] = result
         if S: update_flags(flags, result, rn_val, val2, "logic")
+
     elif opcode == 0b1111:  # MVN
-        regs[rd_idx] = (~val2) & 0xFFFFFFFF
+        result = (~val2) & 0xFFFFFFFF
+        regs[rd_idx] = result
         if S: update_flags(flags, result, rn_val, val2, "logic")
+
     elif opcode == 0b1101:  # MOV
-        regs[rd_idx] = val2
+        result = val2 & 0xFFFFFFFF
+        regs[rd_idx] = result
         if S: update_flags(flags, result, rn_val, val2, "logic")
+
     elif opcode == 0b1010:  # CMP
         result = (regs[rn_idx] - val2) & 0xFFFFFFFF
         if S: update_flags(flags, result, rn_val, val2, "sub")
+        
     else:
         raise NotImplementedError(f"Opcode {opcode} not implemented")
 

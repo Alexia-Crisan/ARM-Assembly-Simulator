@@ -34,7 +34,7 @@ def decode_branch(instruction: int, regs: list, flags: dict):
  
     if take_branch:
         if L == 1:
-            regs[14] = (regs[15]) & 0xFFFFFFFF
+            regs[14] = (regs[15] + 4) & 0xFFFFFFFF
         regs[15] = target_address
     else:
         regs[15] = (regs[15] + 4) & 0xFFFFFFFF
