@@ -14,5 +14,6 @@ ADD R2, #1  ; counter++
 CMP R2, R0      ; compare counter with N
 BNE sum_loop     ; if counter < N, loop
 
+MOV R3, #256
 STR R1, [R3]
 HLT
