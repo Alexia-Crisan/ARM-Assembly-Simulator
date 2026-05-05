@@ -72,6 +72,7 @@ function renderResults({ registers, flags, instruction_memory, data_memory, step
   const COLS = 8;
 
   function buildMemGrid(words, baseAddr, usedClass) {
+    const HLT = 0xF0000000;
     let html = `<div class="mem-grid-wrap"><table class="mem-grid"><thead><tr>
       <th></th>`;
     for (let c = 0; c < COLS; c++)
@@ -84,7 +85,8 @@ function renderResults({ registers, flags, instruction_memory, data_memory, step
       for (let c = 0; c < COLS; c++) {
         const idx = r * COLS + c;
         const val = words[idx] ?? 0;
-        const cls = val !== 0 ? usedClass : "cell-empty";
+        const isUsed = val !== 0 && val !== HLT;
+        const cls = isUsed ? usedClass : "cell-empty";
         const txt = val.toString(16).toUpperCase().padStart(8, "0");
         html += `<td class="${cls}">${txt}</td>`;
       }

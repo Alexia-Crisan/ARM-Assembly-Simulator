@@ -10,7 +10,7 @@
   --text:       #d4d4d4;
   --text-dim:   #888;
   --cell-used-instr: #c8f0d8;
-  --cell-used-data:  #e8d5f5;
+  --cell-used-data:  #c8f0d8;
   --cell-empty:      #2a2a2a;
   --cell-border:     #3a3a3a;
   --error-bg:   #2d1414;
@@ -27,7 +27,6 @@ body {
   overflow: hidden;
 }
 
-/* ── Left panel (editor) ─────────────────────────────────────────── */
 #editor {
   width: 42%;
   min-width: 320px;
@@ -47,7 +46,6 @@ body {
   text-transform: uppercase;
 }
 
-/* ── Code editor with line numbers ──────────────────────────────── */
 #editor-wrapper {
   flex: 1;
   display: flex;
@@ -91,7 +89,6 @@ body {
 
 #codeArea:focus { box-shadow: inset 0 0 0 1px var(--green); }
 
-/* ── Buttons ─────────────────────────────────────────────────────── */
 #btn-bar {
   display: flex;
   gap: 8px;
@@ -109,7 +106,6 @@ button {
   transition: background 0.18s, color 0.18s;
 }
 
-/* Primary: filled green */
 .btn-primary {
   background: var(--green);
   color: #0a0a0a;
@@ -120,7 +116,6 @@ button {
   color: var(--green);
 }
 
-/* Secondary: ghost */
 .btn-secondary {
   background: transparent;
   color: var(--text-dim);
@@ -131,7 +126,6 @@ button {
   border-color: var(--green);
 }
 
-/* Docs: grey bg, green text + outline */
 .btn-docs {
   background: #2c2c2c;
   color: var(--green);
@@ -143,7 +137,6 @@ button {
   color: #0a0a0a;
 }
 
-/* ── Right panel (output) ─────────────────────────────────────────── */
 #output {
   flex: 1;
   height: 100%;
@@ -160,7 +153,6 @@ button {
   text-transform: uppercase;
 }
 
-/* ── Results sections ────────────────────────────────────────────── */
 .section { margin-bottom: 18px; }
 
 .section h3 {
@@ -173,7 +165,6 @@ button {
   padding-bottom: 4px;
 }
 
-/* ── Register / flag tables ──────────────────────────────────────── */
 table {
   border-collapse: collapse;
   width: 100%;
@@ -195,7 +186,6 @@ th {
 
 tr:nth-child(even) td { background: #202020; }
 
-/* ── Memory grid ─────────────────────────────────────────────────── */
 .mem-grid-wrap {
   overflow-x: auto;
   margin-top: 4px;
@@ -233,10 +223,9 @@ tr:nth-child(even) td { background: #202020; }
 }
 
 .cell-used-instr { background: var(--cell-used-instr); color: #0a3a20; }
-.cell-used-data  { background: var(--cell-used-data);  color: #3a1060; }
+.cell-used-data  { background: var(--cell-used-data);  color: #1a1a1a; }
 .cell-empty      { background: var(--cell-empty);      color: var(--text-dim); }
 
-/* ── Error box ───────────────────────────────────────────────────── */
 .error-box {
   background: var(--error-bg);
   color: var(--error-fg);
@@ -247,13 +236,11 @@ tr:nth-child(even) td { background: #202020; }
   line-height: 1.5;
 }
 
-/* ── Scrollbar ───────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-dark); }
 ::-webkit-scrollbar-thumb { background: #3a3a3a; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--green-dim); }
 
-/* ── Docs page ────────────────────────────────────────────────────── */
 body.docs-page {
   display: block;
   overflow: auto;
