@@ -223,7 +223,7 @@ tr:nth-child(even) td { background: #202020; }
 }
 
 .cell-used-instr,
-.cell-used-data { background: var(--cell-used-instr); color: #0a3a20; }
+.cell-used-data { background: var(--cell-used-instr); color: var(--text); }
 .cell-empty      { background: var(--cell-empty);      color: var(--text-dim); }
 
 .error-box {
