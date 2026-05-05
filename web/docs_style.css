@@ -118,10 +118,6 @@ body.docs-page {
   vertical-align: top;
 }
 
-.instr-table tr:hover td {
-  background: #202020;
-}
-
 .mnemonic {
   color: var(--green);
   font-weight: bold;
