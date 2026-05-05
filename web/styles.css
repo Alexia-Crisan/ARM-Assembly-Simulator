@@ -222,12 +222,9 @@ tr:nth-child(even) td { background: #202020; }
   padding-right: 6px;
 }
 
-.cell-used-instr { background: var(--cell-used-instr); color: #0a3a20; }
-.cell-used-data { background: var(--cell-used-data); color: #0a3a20; }
-.cell-empty      { background: var(--cell-empty);      color: var(--text-dim); }
-
 .cell-used-instr,
 .cell-used-data { background: var(--cell-used-instr); color: #0a3a20; }
+.cell-empty      { background: var(--cell-empty);      color: var(--text-dim); }
 
 .error-box {
   background: var(--error-bg);
