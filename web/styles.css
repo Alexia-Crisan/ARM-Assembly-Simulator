@@ -184,7 +184,9 @@ th {
   letter-spacing: 0.5px;
 }
 
-tr:nth-child(even) td { background: #202020; }
+table:not(.mem-grid) tr:nth-child(even) td {
+  background: #202020;
+}
 
 .mem-grid-wrap {
   overflow-x: auto;
@@ -222,8 +224,8 @@ tr:nth-child(even) td { background: #202020; }
   padding-right: 6px;
 }
 
-.cell-used-instr,
-.cell-used-data { background: var(--cell-used-instr); color: var(--text); }
+.cell-used-instr { background: var(--cell-used-instr); color: #0a3a20; }
+.cell-used-data { background: var(--cell-used-data); color: #0a3a20; }
 .cell-empty      { background: var(--cell-empty);      color: var(--text-dim); }
 
 .error-box {
