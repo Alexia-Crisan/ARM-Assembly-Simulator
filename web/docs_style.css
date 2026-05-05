@@ -37,11 +37,6 @@ body.docs-page {
   transition: background 0.18s,color 0.18s;
 }
 
-.back-btn:hover {
-  background: var(--green);
-  color: #0a0a0a;
-}
-
 .pdf-banner {
   background: #1e2e1e;
   border: 1px solid var(--green);
