@@ -1,174 +1,493 @@
 <!doctype html>
-
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Instruction Reference</title>
+    <title>Instruction Reference — ARM Assembly Simulator</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="docs_style.css" />
   </head>
-  <body>
-    <div style="padding: 20px; max-width: 1000px; margin: auto">
-      <h2>ARM Assembly Simulator – Instruction Reference</h2>
+  <body class="docs-page">
+    <div class="docs-container">
+      <div class="docs-header">
+        <h1>⚙ ARM Assembly Simulator — Instruction Reference</h1>
+        <a class="back-btn" href="/">← Back to Simulator</a>
+      </div>
 
-      <p>
-        This simulator supports a simplified ARM-like instruction set, including
-        core instructions, memory operations, branching, stack manipulation, and
-        pseudo-instructions.
-      </p>
+      <div class="pdf-banner">
+        <div>
+          <p>
+            Full architecture specification, binary encoding tables, and
+            implementation details are available in the PDF documentation.
+          </p>
+          <a href="/Documentation_ARM_Assembly_Simulator.pdf" target="_blank">
+            Open Full PDF Documentation ↗
+          </a>
+        </div>
+      </div>
 
-      <hr />
+      <div class="docs-section">
+        <h2>Architecture Overview</h2>
+        <div class="note">
+          <b>32-bit ARM-inspired ISA.</b> 16 general-purpose registers (R0–R15).
+          R13 = SP (stack pointer), R14 = LR (link register), R15 = PC (program
+          counter).<br /><br />
+          <b>Unified memory</b> — single flat address space: instructions at
+          <span style="color: var(--green)">0x0000</span>, data/stack at
+          <span style="color: var(--green)">0x0100</span> (default 512-byte
+          total, configurable).<br /><br />
+          <b>Condition flags:</b> N (negative), Z (zero), C (carry), V
+          (overflow). Updated only by <code>CMP</code> or when the S-bit is set.
+        </div>
+      </div>
 
-      <h3>Data Processing Instructions</h3>
+      <div class="docs-section">
+        <h2>Data Processing Instructions</h2>
+        <div class="enc-box">
+          Encoding:
+          <span
+            >cond | 00 | I | opcode(4) | S | Rn(4) | Rd(4) | operand2(12)</span
+          >
+        </div>
 
-      <b>MOV – Move</b>
-      <ul>
-        <li>MOV Rd, #imm → Rd = imm</li>
-        <li>MOV Rd, Rn → Rd = Rn</li>
-      </ul>
+        <div class="instr-group">
+          <table class="instr-table">
+            <thead>
+              <tr>
+                <th>Mnemonic</th>
+                <th>Syntax</th>
+                <th>Operation</th>
+                <th>Encoding note</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mnemonic">MOV</td>
+                <td class="syntax">MOV Rd, #imm / Rm</td>
+                <td class="desc">Rd = imm or Rm</td>
+                <td class="enc">opcode 1101</td>
+              </tr>
+              <tr>
+                <td class="mnemonic">ADD</td>
+                <td class="syntax">ADD Rd, Rn, Rm/#imm<br />ADD Rd, Rm/#imm</td>
+                <td class="desc">Rd = Rn + op2<br />Rd = Rd + op2</td>
+                <td class="enc">opcode 0100</td>
+              </tr>
+              <tr>
+                <td class="mnemonic">SUB</td>
+                <td class="syntax">SUB Rd, Rn, Rm/#imm<br />SUB Rd, Rm/#imm</td>
+                <td class="desc">Rd = Rn − op2<br />Rd = Rd − op2</td>
+                <td class="enc">opcode 0010</td>
+              </tr>
+              <tr>
+                <td class="mnemonic">CMP</td>
+                <td class="syntax">CMP Rn, Rm/#imm</td>
+                <td class="desc">
+                  Sets flags from Rn − op2. No result written.
+                </td>
+                <td class="enc">opcode 1010, S=1</td>
+              </tr>
+              <tr>
+                <td class="mnemonic">AND</td>
+                <td class="syntax">AND Rd, Rn, Rm/#imm</td>
+                <td class="desc">Rd = Rn &amp; op2</td>
+                <td class="enc">opcode 0000</td>
+              </tr>
+              <tr>
+                <td class="mnemonic">ORR</td>
+                <td class="syntax">ORR Rd, Rn, Rm/#imm</td>
+                <td class="desc">Rd = Rn | op2</td>
+                <td class="enc">opcode 1100</td>
+              </tr>
+              <tr>
+                <td class="mnemonic">EOR</td>
+                <td class="syntax">EOR Rd, Rn, Rm/#imm</td>
+                <td class="desc">Rd = Rn ^ op2</td>
+                <td class="enc">opcode 0001</td>
+              </tr>
+              <tr>
+                <td class="mnemonic">MVN</td>
+                <td class="syntax">MVN Rd, Rm/#imm</td>
+                <td class="desc">Rd = ~op2</td>
+                <td class="enc">opcode 1111</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="note">
+          <b>Immediate encoding:</b> 12-bit field =
+          <code>rot(4) | imm8(8)</code>. Value = ROR(imm8, rot×2). Values must
+          fit this form — not all 32-bit constants are encodable.
+        </div>
+      </div>
 
-      <b>ADD – Addition</b>
-      <ul>
-        <li>ADD Rd, Rn, Rm → Rd = Rn + Rm</li>
-        <li>ADD Rd, Rn, #imm → Rd = Rn + imm</li>
-        <li>ADD Rd, Rm → Rd = Rd + Rm</li>
-      </ul>
+      <div class="docs-section">
+        <h2>Multiply / Divide</h2>
+        <div class="enc-box">
+          Encoding:
+          <span
+            >cond | 000000 | A | S | Rd(4) | 0000 | Rs(4) | 1001 | Rm(4)</span
+          >
+        </div>
+        <table class="instr-table">
+          <thead>
+            <tr>
+              <th>Mnemonic</th>
+              <th>Syntax</th>
+              <th>Operation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mnemonic">MUL</td>
+              <td class="syntax">MUL Rd, Rm, Rs<br />MUL Rd, Rs</td>
+              <td class="desc">Rd = Rm × Rs (integer, 32-bit result)</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">DIV</td>
+              <td class="syntax">DIV Rd, Rm, Rs<br />DIV Rd, Rs</td>
+              <td class="desc">Rd = Rm ÷ Rs (integer division, truncated)</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <b>DIV by zero</b> raises a runtime ZeroDivisionError and halts the
+          simulation.
+        </div>
+      </div>
 
-      <b>SUB – Subtraction</b>
-      <ul>
-        <li>SUB Rd, Rn, Rm → Rd = Rn - Rm</li>
-        <li>SUB Rd, Rn, #imm → Rd = Rn - imm</li>
-        <li>SUB Rd, Rm → Rd = Rd - Rm</li>
-      </ul>
+      <div class="docs-section">
+        <h2>Load / Store</h2>
+        <div class="enc-box">
+          Encoding:
+          <span
+            >cond | 01 | I | P | U | B | W | L | Rn(4) | Rd(4) |
+            offset12(12)</span
+          >
+        </div>
+        <table class="instr-table">
+          <thead>
+            <tr>
+              <th>Mnemonic</th>
+              <th>Syntax</th>
+              <th>Operation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mnemonic">LDR</td>
+              <td class="syntax">LDR Rd, [Rn]<br />LDR Rd, [Rn, #offset]</td>
+              <td class="desc">Rd = mem[Rn + offset]</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">STR</td>
+              <td class="syntax">STR Rd, [Rn]<br />STR Rd, [Rn, #offset]</td>
+              <td class="desc">mem[Rn + offset] = Rd</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <b>Word-aligned</b> 32-bit transfers only. Access outside memory
+          bounds raises MemoryError.
+        </div>
+      </div>
 
-      <b>CMP – Compare</b>
-      <ul>
-        <li>CMP Rn, Rm</li>
-        <li>CMP Rn, #imm</li>
-        <li>Updates flags only (no result stored)</li>
-      </ul>
+      <div class="docs-section">
+        <h2>Stack Operations</h2>
+        <div class="enc-box">
+          Encoding:
+          <span>cond | 100 | P | U | S | W | L | Rn(4) | reg_list(16)</span> —
+          Base register = R13 (SP)
+        </div>
+        <table class="instr-table">
+          <thead>
+            <tr>
+              <th>Mnemonic</th>
+              <th>Syntax</th>
+              <th>Operation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mnemonic">PSH / PUSH</td>
+              <td class="syntax">PSH {R0, R1, ...}</td>
+              <td class="desc">
+                SP -= 4 per register, writes to memory. Full-descending stack.
+              </td>
+            </tr>
+            <tr>
+              <td class="mnemonic">POP</td>
+              <td class="syntax">POP {R0, R1, ...}</td>
+              <td class="desc">Reads from memory, SP += 4 per register.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <b>SP (R13)</b> starts at the top of the data region
+          (empty-descending). First push writes to the last word of the data
+          region.
+        </div>
+      </div>
 
-      <b>Logical Operations</b>
-      <ul>
-        <li>AND Rd, Rn, Rm</li>
-        <li>ORR Rd, Rn, Rm</li>
-        <li>EOR Rd, Rn, Rm</li>
-        <li>MVN Rd, Rm → Rd = NOT Rm</li>
-      </ul>
+      <div class="docs-section">
+        <h2>Branch Instructions</h2>
+        <div class="enc-box">
+          Encoding: <span>cond(4) | 101 | L | offset24(24)</span> — Target = PC
+          + 8 + offset×4
+        </div>
+        <table class="instr-table">
+          <thead>
+            <tr>
+              <th>Mnemonic</th>
+              <th>Condition</th>
+              <th>Flags tested</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mnemonic">B</td>
+              <td class="desc">Always</td>
+              <td class="enc">—</td>
+              <td class="desc">Unconditional jump</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">BEQ</td>
+              <td class="desc">Equal</td>
+              <td class="enc">Z=1</td>
+              <td class="desc"></td>
+            </tr>
+            <tr>
+              <td class="mnemonic">BNE</td>
+              <td class="desc">Not equal</td>
+              <td class="enc">Z=0</td>
+              <td class="desc"></td>
+            </tr>
+            <tr>
+              <td class="mnemonic">BLT</td>
+              <td class="desc">Less than</td>
+              <td class="enc">N≠V</td>
+              <td class="desc">Signed</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">BGT</td>
+              <td class="desc">Greater than</td>
+              <td class="enc">Z=0 and N=V</td>
+              <td class="desc">Signed</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">BGE</td>
+              <td class="desc">Greater or equal</td>
+              <td class="enc">N=V</td>
+              <td class="desc">Signed</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">BLE</td>
+              <td class="desc">Less or equal</td>
+              <td class="enc">Z=1 or N≠V</td>
+              <td class="desc">Signed</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">JMS</td>
+              <td class="desc">Always (with link)</td>
+              <td class="enc">—</td>
+              <td class="desc">LR = PC+4, then jump. Use RET to return.</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">RET</td>
+              <td class="desc">—</td>
+              <td class="enc">—</td>
+              <td class="desc">MOV PC, LR — returns from subroutine</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <b>ARM pipeline offset:</b> when a branch executes, PC has already
+          been fetched 8 bytes ahead, so target = PC + 8 + (offset × 4).
+        </div>
+      </div>
 
-      <hr />
+      <div class="docs-section">
+        <h2>System Instructions</h2>
+        <div class="enc-box">
+          Encoding: <span>1111 | opcode(3) | operand(25)</span> — identified by
+          top nibble 0xF
+        </div>
+        <table class="instr-table">
+          <thead>
+            <tr>
+              <th>Mnemonic</th>
+              <th>Syntax</th>
+              <th>Operation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mnemonic">HLT</td>
+              <td class="syntax">HLT</td>
+              <td class="desc">
+                Stop execution. Always place at end of program.
+              </td>
+            </tr>
+            <tr>
+              <td class="mnemonic">INP</td>
+              <td class="syntax">INP Rd</td>
+              <td class="desc">
+                Read integer from stdin → Rd (desktop mode only)
+              </td>
+            </tr>
+            <tr>
+              <td class="mnemonic">OUT</td>
+              <td class="syntax">OUT {R0, R1, ...}</td>
+              <td class="desc">Print values of listed registers to stdout</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-      <h3>Memory Instructions</h3>
+      <div class="docs-section">
+        <h2>Pseudo-Instructions</h2>
+        <div class="note" style="margin-bottom: 12px">
+          <b>Assembler-only:</b> pseudo-instructions are expanded at assemble
+          time into real machine words. They use <b>R12</b> as a scratch
+          register (no PUSH/POP emitted — zero memory traffic).
+        </div>
+        <table class="instr-table">
+          <thead>
+            <tr>
+              <th>Mnemonic</th>
+              <th>Syntax</th>
+              <th>Expands to</th>
+              <th>Operation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mnemonic">INC</td>
+              <td class="syntax">INC Rd</td>
+              <td class="enc">ADD Rd, Rd, #1</td>
+              <td class="desc">Rd++</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">DEC</td>
+              <td class="syntax">DEC Rd</td>
+              <td class="enc">SUB Rd, Rd, #1</td>
+              <td class="desc">Rd--</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">CLR</td>
+              <td class="syntax">CLR Rd</td>
+              <td class="enc">MOV Rd, #0</td>
+              <td class="desc">Rd = 0</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">LSL</td>
+              <td class="syntax">LSL Rd, Rn, #n<br />LSL Rd, #n</td>
+              <td class="enc">MOV R12, #(1&lt;&lt;n)<br />MUL Rd, Rn, R12</td>
+              <td class="desc">Logical shift left — multiply by 2ⁿ</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">LSR</td>
+              <td class="syntax">LSR Rd, Rn, #n<br />LSR Rd, #n</td>
+              <td class="enc">MOV R12, #(1&lt;&lt;n)<br />DIV Rd, Rn, R12</td>
+              <td class="desc">Logical shift right — integer divide by 2ⁿ</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">MOD</td>
+              <td class="syntax">MOD Rd, Rn, Rm</td>
+              <td class="enc">
+                DIV R12, Rn, Rm<br />MUL R12, R12, Rm<br />SUB Rd, Rn, R12
+              </td>
+              <td class="desc">Rd = Rn mod Rm</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">SWAP / SWP</td>
+              <td class="syntax">SWAP Rn, Rm</td>
+              <td class="enc">MOV R12, Rn<br />MOV Rn, Rm<br />MOV Rm, R12</td>
+              <td class="desc">Exchange two registers</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">LOOP</td>
+              <td class="syntax">LOOP label</td>
+              <td class="enc">
+                SUB R12, R12, #1<br />CMP R12, #0<br />BNE label
+              </td>
+              <td class="desc">
+                Counted loop — R12 is the counter (set it before the loop)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-      <b>LDR – Load</b>
-      <ul>
-        <li>LDR Rd, [Rn]</li>
-        <li>LDR Rd, [Rn, #offset]</li>
-      </ul>
+      <div class="docs-section">
+        <h2>Condition Flags</h2>
+        <table class="flag-table">
+          <thead>
+            <tr>
+              <th>Flag</th>
+              <th>Name</th>
+              <th>Set when…</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="flag-name">N</td>
+              <td>Negative</td>
+              <td>
+                Result bit 31 = 1 (i.e. result is negative in signed
+                interpretation)
+              </td>
+            </tr>
+            <tr>
+              <td class="flag-name">Z</td>
+              <td>Zero</td>
+              <td>Result == 0</td>
+            </tr>
+            <tr>
+              <td class="flag-name">C</td>
+              <td>Carry</td>
+              <td>ADD: unsigned overflow; SUB/CMP: no borrow (rn ≥ val2)</td>
+            </tr>
+            <tr>
+              <td class="flag-name">V</td>
+              <td>Overflow</td>
+              <td>Signed overflow occurred</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <b>S-bit rule:</b> Flags are only updated when the S bit (bit 20) is
+          set in the encoding. CMP always sets S=1. Plain ADD/SUB/etc. have S=0
+          and leave flags unchanged.
+        </div>
+      </div>
 
-      <b>STR – Store</b>
-      <ul>
-        <li>STR Rd, [Rn]</li>
-        <li>STR Rd, [Rn, #offset]</li>
-      </ul>
-
-      <hr />
-
-      <h3>Stack Instructions</h3>
-
-      <b>PUSH</b>
-      <ul>
-        <li>PUSH {Rlist}</li>
-        <li>Decrements SP and stores registers</li>
-      </ul>
-
-      <b>POP</b>
-      <ul>
-        <li>POP {Rlist}</li>
-        <li>Loads registers and increments SP</li>
-      </ul>
-
-      <hr />
-
-      <h3>Branch Instructions</h3>
-
-      <ul>
-        <li>B label → unconditional jump</li>
-        <li>BL label → jump + save return address (LR)</li>
-        <li>RET → return (PC = LR)</li>
-      </ul>
-
-      <b>Conditional branches:</b>
-      <ul>
-        <li>BEQ → if Z == 1</li>
-        <li>BNE → if Z == 0</li>
-        <li>BGT → if Z == 0 and N == V</li>
-        <li>BLT → if N != V</li>
-        <li>BGE → if N == V</li>
-        <li>BLE → if Z == 1 or N != V</li>
-      </ul>
-
-      <hr />
-
-      <h3>Multiply / Divide</h3>
-
-      <ul>
-        <li>MUL Rd, Rm, Rs → Rd = Rm * Rs</li>
-        <li>DIV Rd, Rm, Rs → Rd = Rm / Rs</li>
-      </ul>
-
-      <hr />
-
-      <h3>System Instructions</h3>
-
-      <ul>
-        <li>HLT → stop execution</li>
-        <li>INP Rd → read input into register</li>
-        <li>OUT {Rlist} → print registers</li>
-      </ul>
-
-      <hr />
-
-      <h3>Pseudo-Instructions</h3>
-
-      <b>Simple:</b>
-      <ul>
-        <li>INC Rd → ADD Rd, Rd, #1</li>
-        <li>DEC Rd → SUB Rd, Rd, #1</li>
-        <li>CLR Rd → MOV Rd, #0</li>
-      </ul>
-
-      <b>Shift operations:</b>
-      <ul>
-        <li>LSL Rd, Rn, #imm → Rd = Rn × (2^imm)</li>
-        <li>LSR Rd, Rn, #imm → Rd = Rn / (2^imm)</li>
-      </ul>
-
-      <b>Advanced:</b>
-      <ul>
-        <li>MOD Rd, Rn, Rm → Rd = Rn % Rm</li>
-        <li>SWAP Rn, Rm → swap values</li>
-        <li>LOOP label → counted loop using R12</li>
-      </ul>
-
-      <hr />
-
-      <h3>Full Documentation</h3>
-
-      <p>For full architecture, encoding details, and implementation:</p>
-
-      <p>
-        <a
-          style="color: white"
-          href="Documentation_ARM_Assembly_Simulator.pdf"
-          target="_blank"
-        >
-          Open Full PDF Documentation
-        </a>
-      </p>
-
-      <br />
-
-      <button onclick="window.location.href = '/'">⬅ Back to Simulator</button>
+      <div class="docs-section">
+        <h2>Quick Reference</h2>
+        <p style="color: #666; font-size: 12px; margin: 0 0 6px">
+          All supported mnemonics:
+        </p>
+        <div class="pill-row">
+          <span class="pill">MOV</span><span class="pill">ADD</span
+          ><span class="pill">SUB</span> <span class="pill">CMP</span
+          ><span class="pill">AND</span><span class="pill">ORR</span>
+          <span class="pill">EOR</span><span class="pill">MVN</span
+          ><span class="pill">MUL</span> <span class="pill">DIV</span
+          ><span class="pill">LDR</span><span class="pill">STR</span>
+          <span class="pill">PSH</span><span class="pill">PUSH</span
+          ><span class="pill">POP</span> <span class="pill">B</span
+          ><span class="pill">BEQ</span><span class="pill">BNE</span>
+          <span class="pill">BLT</span><span class="pill">BGT</span
+          ><span class="pill">BGE</span> <span class="pill">BLE</span
+          ><span class="pill">JMS</span><span class="pill">RET</span>
+          <span class="pill">HLT</span><span class="pill">INP</span
+          ><span class="pill">OUT</span> <span class="pill">INC</span
+          ><span class="pill">DEC</span><span class="pill">CLR</span>
+          <span class="pill">LSL</span><span class="pill">LSR</span
+          ><span class="pill">MOD</span> <span class="pill">SWAP</span
+          ><span class="pill">SWP</span><span class="pill">LOOP</span>
+        </div>
+      </div>
     </div>
   </body>
 </html>
