@@ -1,106 +1,263 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --green:      #00ff9c;
+  --green-dim:  #00c97a;
+  --bg-dark:    #1a1a1a;
+  --bg-panel:   #242424;
+  --bg-editor:  #1e1e1e;
+  --border:     #2e2e2e;
+  --text:       #d4d4d4;
+  --text-dim:   #888;
+  --cell-used-instr: #c8f0d8;
+  --cell-used-data:  #e8d5f5;
+  --cell-empty:      #2a2a2a;
+  --cell-border:     #3a3a3a;
+  --error-bg:   #2d1414;
+  --error-fg:   #ff6b6b;
+}
+
 body {
-  background-color: #1e1e1e;
-  color: #e0e0e0;
-  font-family: Consolas, monospace;
+  background: var(--bg-dark);
+  color: var(--text);
+  font-family: Consolas, "Courier New", monospace;
   margin: 0;
   display: flex;
   height: 100vh;
+  overflow: hidden;
 }
 
+/* ── Left panel (editor) ─────────────────────────────────────────── */
 #editor {
-  width: 40%;
+  width: 42%;
+  min-width: 320px;
   height: 100%;
-  background: #2d2d2d;
-  padding: 10px;
-  box-sizing: border-box;
-  border-right: 2px solid #333;
+  background: var(--bg-panel);
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+  border-right: 2px solid var(--green);
 }
 
-#output {
-  width: 60%;
-  height: 100%;
-  overflow-y: auto;
-  background: #1e1e1e;
-  padding: 10px;
-  box-sizing: border-box;
+#editor h2 {
+  margin: 0 0 10px;
+  color: var(--green);
+  font-size: 15px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
-textarea {
-  width: 100%;
-  height: 85%;
-  background: #2d2d2d;
-  color: #e0e0e0;
+/* ── Code editor with line numbers ──────────────────────────────── */
+#editor-wrapper {
+  flex: 1;
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-editor);
+  margin-bottom: 12px;
+}
+
+#line-numbers {
+  width: 40px;
+  min-width: 40px;
+  background: #1a1a1a;
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 21px;
+  padding: 10px 6px 10px 0;
+  text-align: right;
+  user-select: none;
+  overflow: hidden;
+  border-right: 1px solid var(--border);
+}
+
+#codeArea {
+  flex: 1;
+  background: var(--bg-editor);
+  color: var(--text);
   border: none;
-  font-size: 14px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 21px;
+  padding: 10px 10px 10px 12px;
   resize: none;
   outline: none;
+  tab-size: 4;
+  overflow-y: auto;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+#codeArea:focus { box-shadow: inset 0 0 0 1px var(--green); }
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+#btn-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 button {
-  color: #1e1e1e;
-  background: #00ff9c;
-  border: 2px solid #00ff9c;
-  padding: 10px 20px;
-  margin: 5px;
+  padding: 9px 18px;
+  font-family: inherit;
+  font-size: 12px;
   font-weight: bold;
+  letter-spacing: 0.5px;
+  border-radius: 5px;
   cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  transition: background 0.18s, color 0.18s;
 }
 
-button:hover {
-  color: #00ff9c;
-  background: #1e1e1e;
+/* Primary: filled green */
+.btn-primary {
+  background: var(--green);
+  color: #0a0a0a;
+  border: 2px solid var(--green);
+}
+.btn-primary:hover {
+  background: transparent;
+  color: var(--green);
 }
 
-.doc-btn {
-  background: #1e1e1e;
-  color: #00ff9c;
-  border: 2px solid #00ff9c;
+/* Secondary: ghost */
+.btn-secondary {
+  background: transparent;
+  color: var(--text-dim);
+  border: 2px solid var(--text-dim);
+}
+.btn-secondary:hover {
+  color: var(--green);
+  border-color: var(--green);
 }
 
-.doc-btn:hover {
-  background: #00ff9c;
-  color: black;
+/* Docs: grey bg, green text + outline */
+.btn-docs {
+  background: #2c2c2c;
+  color: var(--green);
+  border: 2px solid var(--green);
+  margin-left: auto;
+}
+.btn-docs:hover {
+  background: var(--green);
+  color: #0a0a0a;
 }
 
-.section {
-  margin-bottom: 15px;
+/* ── Right panel (output) ─────────────────────────────────────────── */
+#output {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--bg-dark);
+  padding: 14px 18px;
 }
 
+#output h2 {
+  margin: 0 0 12px;
+  color: var(--green);
+  font-size: 15px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ── Results sections ────────────────────────────────────────────── */
+.section { margin-bottom: 18px; }
+
+.section h3 {
+  color: var(--green);
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+}
+
+/* ── Register / flag tables ──────────────────────────────────────── */
 table {
   border-collapse: collapse;
   width: 100%;
-  font-size: 13px;
+  font-size: 12px;
 }
 
-td,
-th {
-  border: 1px solid #555;
-  padding: 4px;
+td, th {
+  border: 1px solid var(--cell-border);
+  padding: 4px 8px;
   text-align: center;
 }
 
 th {
-  background: #333;
-  color: #00ff9c;
+  background: #1e1e1e;
+  color: var(--green);
+  font-size: 11px;
+  letter-spacing: 0.5px;
 }
 
+tr:nth-child(even) td { background: #202020; }
+
+/* ── Memory grid ─────────────────────────────────────────────────── */
+.mem-grid-wrap {
+  overflow-x: auto;
+  margin-top: 4px;
+}
+
+.mem-grid {
+  border-collapse: collapse;
+  font-size: 11px;
+  font-family: Consolas, monospace;
+  white-space: nowrap;
+}
+
+.mem-grid th {
+  background: #1a1a1a;
+  color: var(--text-dim);
+  font-size: 10px;
+  padding: 2px 6px;
+  font-weight: normal;
+}
+
+.mem-grid td {
+  width: 80px;
+  padding: 2px 4px;
+  text-align: center;
+  border: 1px solid var(--cell-border);
+}
+
+.mem-grid td.addr-label {
+  width: 46px;
+  color: var(--text-dim);
+  font-size: 10px;
+  border: none;
+  text-align: right;
+  padding-right: 6px;
+}
+
+.cell-used-instr { background: var(--cell-used-instr); color: #0a3a20; }
+.cell-used-data  { background: var(--cell-used-data);  color: #3a1060; }
+.cell-empty      { background: var(--cell-empty);      color: var(--text-dim); }
+
+/* ── Error box ───────────────────────────────────────────────────── */
 .error-box {
-  background: #330000;
-  color: #ff5555;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 14px;
+  background: var(--error-bg);
+  color: var(--error-fg);
+  border: 1px solid #5a2020;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
-h2,
-h3 {
-  color: #00ff9c;
-  margin-top: 10px;
-  margin-bottom: 8px;
-}
+/* ── Scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: #3a3a3a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--green-dim); }
 
-#editor {
-  border-right: 2px solid #00ff9c;
+/* ── Docs page ────────────────────────────────────────────────────── */
+body.docs-page {
+  display: block;
+  overflow: auto;
+  height: auto;
+  padding: 0;
+  background: var(--bg-dark);
 }
