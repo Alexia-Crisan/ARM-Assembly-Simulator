@@ -1,5 +1,8 @@
 """
-Single data transfer (LDR, STR): cond|01|I|P|U|B|W|L|Rn|Rd|offset12
+Single data transfer: cond|01|I|P|U|B|W|L|Rn|Rd|offset12
+ 
+B=0 -> word (LDR/STR)
+B=1 -> byte (LDRB/STRB)
 """
 
 from .helpers import register_to_number, encode_immediate_value, COND_ALWAYS
@@ -9,46 +12,37 @@ from .helpers import register_to_number, encode_immediate_value, COND_ALWAYS
    
 def encode_load_store(instruction: str, parts: list) -> int:
     """
-    - LDR Rd, [Rn]          -> offset = 0
-    - LDR Rd, [Rn, #imm]    -> offset = imm
-    - STR Rd, [Rn] / STR Rd, [Rn, #imm]
-
-    I     = 0 (immediate offset, not register)
-    P     = 1 (pre-indexed)
-    U     = 1 if offset >= 0, 0 if negative (add/subtract)
-    B     = 0 (word transfer)
-    W     = 0 (no write-back)
-    L     = 1 for LDR (load), 0 for STR (store)
+    LDR  Rd, [Rn]          word load
+    LDR  Rd, [Rn, #imm]    word load with offset
+    STR  Rd, [Rn]          word store
+    STR  Rd, [Rn, #imm]    word store with offset
+    LDRB Rd, [Rn]          byte load (zero-extended)
+    LDRB Rd, [Rn, #imm]    byte load with offset
+    STRB Rd, [Rn]          byte store (lowest byte only)
+    STRB Rd, [Rn, #imm]    byte store with offset
     """
 
+    instr_upper = instruction.upper()
     rd = register_to_number(parts[0].rstrip(","))
-    rn = parts[1]
-    if not (rn.startswith("[") and rn.endswith("]")):
+    rn_str = parts[1]
+ 
+    if not (rn_str.startswith("[") and rn_str.endswith("]")):
         raise ValueError("Memory operand must be [Rn] or [Rn, #imm]")
-
-    inner_rn = rn[1:-1] # remove brackets 
-
-    if "," in inner_rn:
-        rn_token, immediate_value = [t.strip() for t in inner_rn.split(",", 1)]
-        rn = register_to_number(rn_token)     
-        immediate_value = int(immediate_value.lstrip("#"), 0)               
+ 
+    inner = rn_str[1:-1]
+    if "," in inner:
+        rn_tok, imm_tok = [t.strip() for t in inner.split(",", 1)]
+        rn = register_to_number(rn_tok)
+        immediate_value = int(imm_tok.lstrip("#"), 0)
     else:
-        rn = register_to_number(inner_rn)
+        rn = register_to_number(inner)
         immediate_value = 0
-
-    P = 1                      
-    B = 0                       
-    W = 0                    
-    I = 0                       
-
-    if immediate_value >= 0: U = 1 
-    else: U = 0 
-
-    if instruction.upper() == "LDR": L = 1 
-    else: L = 0 
-
-    offset12 = immediate_value & 0xFFF 
-
-    machine_instruction = COND_ALWAYS | (0b01 << 26) | (I << 25) | (P << 24) | (U << 23) | (B << 22) | (W << 21) | (L << 20) | (rn << 16) | (rd << 12) | offset12 
-    
-    return machine_instruction
+ 
+    P = 1; W = 0; I = 0
+    U = 1 if immediate_value >= 0 else 0
+    B = 1 if instr_upper in ("LDRB", "STRB") else 0
+    L = 1 if instr_upper in ("LDR", "LDRB") else 0
+    offset12 = immediate_value & 0xFFF
+ 
+    return COND_ALWAYS | (0b01 << 26) | (I << 25) | (P << 24) | (U << 23) | (B << 22) | (W << 21) | (L << 20) | (rn << 16) | (rd << 12) | offset12
+ 
