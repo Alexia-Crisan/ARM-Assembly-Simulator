@@ -19,9 +19,9 @@
             Full architecture specification, binary encoding tables, and
             implementation details are available in the PDF documentation.
           </p>
-          <a href="/Documentation_ARM_Assembly_Simulator.pdf" target="_blank">
-            Open Full PDF Documentation ↗
-          </a>
+          <a href="/Documentation_ARM_Assembly_Simulator.pdf" target="_blank"
+            >Open Full PDF Documentation ↗</a
+          >
         </div>
       </div>
 
@@ -36,7 +36,12 @@
           <span style="color: var(--green)">0x0100</span> (default 512-byte
           total, configurable).<br /><br />
           <b>Condition flags:</b> N (negative), Z (zero), C (carry), V
-          (overflow). Updated only by <code>CMP</code> or when the S-bit is set.
+          (overflow). Updated only by <code>CMP</code>, <code>TST</code>, or
+          when the S-bit is set.<br /><br />
+          <b>Scratch registers:</b> <code>R12</code> is the primary assembler
+          scratch (pseudo-instructions). <code>R11</code> is used as a secondary
+          scratch by <code>ROL</code> and <code>ROR</code> only. Avoid using
+          R11/R12 as operands to those pseudo-instructions.
         </div>
       </div>
 
@@ -48,7 +53,6 @@
             >cond | 00 | I | opcode(4) | S | Rn(4) | Rd(4) | operand2(12)</span
           >
         </div>
-
         <div class="instr-group">
           <table class="instr-table">
             <thead>
@@ -79,12 +83,30 @@
                 <td class="enc">opcode 0010</td>
               </tr>
               <tr>
+                <td class="mnemonic">RSB</td>
+                <td class="syntax">RSB Rd, Rn, Rm/#imm<br />RSB Rd, Rm/#imm</td>
+                <td class="desc">
+                  Rd = op2 − Rn &nbsp;<span style="color: #555"
+                    >(reverse subtract)</span
+                  >
+                </td>
+                <td class="enc">opcode 0011</td>
+              </tr>
+              <tr>
                 <td class="mnemonic">CMP</td>
                 <td class="syntax">CMP Rn, Rm/#imm</td>
                 <td class="desc">
                   Sets flags from Rn − op2. No result written.
                 </td>
                 <td class="enc">opcode 1010, S=1</td>
+              </tr>
+              <tr>
+                <td class="mnemonic">TST</td>
+                <td class="syntax">TST Rn, Rm/#imm</td>
+                <td class="desc">
+                  Sets flags from Rn &amp; op2. No result written.
+                </td>
+                <td class="enc">opcode 1000, S=1</td>
               </tr>
               <tr>
                 <td class="mnemonic">AND</td>
@@ -105,6 +127,16 @@
                 <td class="enc">opcode 0001</td>
               </tr>
               <tr>
+                <td class="mnemonic">BIC</td>
+                <td class="syntax">BIC Rd, Rn, Rm/#imm<br />BIC Rd, Rm/#imm</td>
+                <td class="desc">
+                  Rd = Rn &amp; ~op2 &nbsp;<span style="color: #555"
+                    >(bit clear)</span
+                  >
+                </td>
+                <td class="enc">opcode 1110</td>
+              </tr>
+              <tr>
                 <td class="mnemonic">MVN</td>
                 <td class="syntax">MVN Rd, Rm/#imm</td>
                 <td class="desc">Rd = ~op2</td>
@@ -115,8 +147,13 @@
         </div>
         <div class="note">
           <b>Immediate encoding:</b> 12-bit field =
-          <code>rot(4) | imm8(8)</code>. Value = ROR(imm8, rot×2). Values must
-          fit this form — not all 32-bit constants are encodable.
+          <code>rot(4) | imm8(8)</code>. Value = ROR(imm8, rot×2). Not all
+          32-bit constants are representable — the assembler raises an error if
+          the value does not fit.<br /><br />
+          <b>TST and CMP</b> are flag-only: they always set S=1 and never write
+          a destination register. <b>RSB</b> is the only instruction that can
+          compute <code>#imm − Rn</code> in a single word (e.g.
+          <code>RSB R1, R0, #0</code> negates R0 into R1).
         </div>
       </div>
 
@@ -145,7 +182,9 @@
             <tr>
               <td class="mnemonic">DIV</td>
               <td class="syntax">DIV Rd, Rm, Rs<br />DIV Rd, Rs</td>
-              <td class="desc">Rd = Rm ÷ Rs (integer division, truncated)</td>
+              <td class="desc">
+                Rd = Rm ÷ Rs (integer division, truncated toward zero)
+              </td>
             </tr>
           </tbody>
         </table>
@@ -170,24 +209,43 @@
               <th>Mnemonic</th>
               <th>Syntax</th>
               <th>Operation</th>
+              <th>Notes</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td class="mnemonic">LDR</td>
-              <td class="syntax">LDR Rd, [Rn]<br />LDR Rd, [Rn, #offset]</td>
-              <td class="desc">Rd = mem[Rn + offset]</td>
+              <td class="syntax">LDR Rd, [Rn]<br />LDR Rd, [Rn, #off]</td>
+              <td class="desc">Rd = mem32[Rn + off]</td>
+              <td class="enc">B=0, L=1</td>
             </tr>
             <tr>
               <td class="mnemonic">STR</td>
-              <td class="syntax">STR Rd, [Rn]<br />STR Rd, [Rn, #offset]</td>
-              <td class="desc">mem[Rn + offset] = Rd</td>
+              <td class="syntax">STR Rd, [Rn]<br />STR Rd, [Rn, #off]</td>
+              <td class="desc">mem32[Rn + off] = Rd</td>
+              <td class="enc">B=0, L=0</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">LDRB</td>
+              <td class="syntax">LDRB Rd, [Rn]<br />LDRB Rd, [Rn, #off]</td>
+              <td class="desc">Rd = mem8[Rn + off], zero-extended</td>
+              <td class="enc">B=1, L=1</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">STRB</td>
+              <td class="syntax">STRB Rd, [Rn]<br />STRB Rd, [Rn, #off]</td>
+              <td class="desc">mem8[Rn + off] = Rd[7:0]</td>
+              <td class="enc">B=1, L=0</td>
             </tr>
           </tbody>
         </table>
         <div class="note">
-          <b>Word-aligned</b> 32-bit transfers only. Access outside memory
-          bounds raises MemoryError.
+          <b>LDR/STR</b> transfer 32 bits (word-aligned).
+          <b>LDRB/STRB</b> transfer exactly 1 byte. LDRB zero-extends — bits
+          31:8 of the destination are always cleared. STRB writes only the
+          lowest byte of the source register; the surrounding bytes in memory
+          are untouched. Memory is big-endian. Access outside bounds raises
+          MemoryError.
         </div>
       </div>
 
@@ -211,13 +269,16 @@
               <td class="mnemonic">PSH / PUSH</td>
               <td class="syntax">PSH {R0, R1, ...}</td>
               <td class="desc">
-                SP -= 4 per register, writes to memory. Full-descending stack.
+                SP -= 4 per register; writes registers to memory.
+                Full-descending stack.
               </td>
             </tr>
             <tr>
               <td class="mnemonic">POP</td>
               <td class="syntax">POP {R0, R1, ...}</td>
-              <td class="desc">Reads from memory, SP += 4 per register.</td>
+              <td class="desc">
+                Reads registers from memory; SP += 4 per register.
+              </td>
             </tr>
           </tbody>
         </table>
@@ -332,7 +393,7 @@
               <td class="mnemonic">INP</td>
               <td class="syntax">INP Rd</td>
               <td class="desc">
-                Read integer from stdin → Rd (desktop mode only)
+                Read integer from stdin → Rd (desktop / server mode only)
               </td>
             </tr>
             <tr>
@@ -347,9 +408,10 @@
       <div class="docs-section">
         <h2>Pseudo-Instructions</h2>
         <div class="note" style="margin-bottom: 12px">
-          <b>Assembler-only:</b> pseudo-instructions are expanded at assemble
-          time into real machine words. They use <b>R12</b> as a scratch
-          register (no PUSH/POP emitted — zero memory traffic).
+          <b>Assembler-only:</b> expanded at assemble time into real machine
+          words — no runtime overhead. <b>R12</b> is the primary scratch
+          register. <b>R11</b> is additionally clobbered by ROL and ROR. Do not
+          use R11 or R12 as operands to ROL / ROR.
         </div>
         <table class="instr-table">
           <thead>
@@ -380,6 +442,18 @@
               <td class="desc">Rd = 0</td>
             </tr>
             <tr>
+              <td class="mnemonic">NOT</td>
+              <td class="syntax">NOT Rd</td>
+              <td class="enc">MVN Rd, Rd</td>
+              <td class="desc">Rd = ~Rd &nbsp;(bitwise NOT in-place)</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">NEG</td>
+              <td class="syntax">NEG Rd, Rn</td>
+              <td class="enc">RSB Rd, Rn, #0</td>
+              <td class="desc">Rd = −Rn &nbsp;(two's complement negate)</td>
+            </tr>
+            <tr>
               <td class="mnemonic">LSL</td>
               <td class="syntax">LSL Rd, Rn, #n<br />LSL Rd, #n</td>
               <td class="enc">MOV R12, #(1&lt;&lt;n)<br />MUL Rd, Rn, R12</td>
@@ -392,12 +466,38 @@
               <td class="desc">Logical shift right — integer divide by 2ⁿ</td>
             </tr>
             <tr>
+              <td class="mnemonic">ABS</td>
+              <td class="syntax">ABS Rd, Rn</td>
+              <td class="enc">
+                CMP Rn, #0<br />MOV Rd, Rn<br />BGE skip<br />RSB Rd, Rn, #0
+              </td>
+              <td class="desc">Rd = |Rn| &nbsp;(absolute value, 4 words)</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">ROL</td>
+              <td class="syntax">ROL Rd, Rn, #n<br />ROL Rd, #n</td>
+              <td class="enc">6 words — saves Rn→R11, shifts via R12</td>
+              <td class="desc">
+                Rotate left by n bits (1..31). Clobbers R11, R12.
+              </td>
+            </tr>
+            <tr>
+              <td class="mnemonic">ROR</td>
+              <td class="syntax">ROR Rd, Rn, #n<br />ROR Rd, #n</td>
+              <td class="enc">6 words — saves Rn→R11, shifts via R12</td>
+              <td class="desc">
+                Rotate right by n bits (1..31). Clobbers R11, R12.
+              </td>
+            </tr>
+            <tr>
               <td class="mnemonic">MOD</td>
               <td class="syntax">MOD Rd, Rn, Rm</td>
               <td class="enc">
                 DIV R12, Rn, Rm<br />MUL R12, R12, Rm<br />SUB Rd, Rn, R12
               </td>
-              <td class="desc">Rd = Rn mod Rm</td>
+              <td class="desc">
+                Rd = Rn mod Rm. Do not use R12 as counter while using MOD.
+              </td>
             </tr>
             <tr>
               <td class="mnemonic">SWAP / SWP</td>
@@ -412,11 +512,76 @@
                 SUB R12, R12, #1<br />CMP R12, #0<br />BNE label
               </td>
               <td class="desc">
-                Counted loop — R12 is the counter (set it before the loop)
+                Counted loop — load counter into R12 before the loop body.
+              </td>
+            </tr>
+            <tr>
+              <td class="mnemonic">CALL</td>
+              <td class="syntax">CALL label</td>
+              <td class="enc">JMS label</td>
+              <td class="desc">Alias for JMS. Sets LR = PC+4 then jumps.</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">HALT</td>
+              <td class="syntax">HALT</td>
+              <td class="enc">HLT</td>
+              <td class="desc">Alias for HLT. Stops execution.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── Debugger ── -->
+      <div class="docs-section">
+        <h2>Step Debugger</h2>
+        <div class="note" style="margin-bottom: 12px">
+          The debugger lets you step through a program one instruction at a
+          time, watching registers and memory change live.
+        </div>
+        <table class="instr-table">
+          <thead>
+            <tr>
+              <th>Button</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mnemonic">▲ Debug</td>
+              <td class="desc">
+                Assemble the program and enter debug mode. The editor becomes
+                read-only and the debug toolbar appears.
+              </td>
+            </tr>
+            <tr>
+              <td class="mnemonic">Step →</td>
+              <td class="desc">
+                Execute one instruction. The current source line is highlighted
+                in green. Changed registers are marked with a green dot.
+              </td>
+            </tr>
+            <tr>
+              <td class="mnemonic">Run »</td>
+              <td class="desc">
+                Run continuously at ~120 ms per step until the program halts or
+                you press Stop.
+              </td>
+            </tr>
+            <tr>
+              <td class="mnemonic">✕ Stop</td>
+              <td class="desc">
+                Exit debug mode and return the editor to normal.
               </td>
             </tr>
           </tbody>
         </table>
+        <div class="note">
+          The current instruction is shown in the green banner at the top of the
+          Visualization panel. The status bar below the editor shows the step
+          count and current PC address.
+          <b>INP</b> is not supported in the web debugger — pre-compute any
+          inputs before debugging.
+        </div>
       </div>
 
       <div class="docs-section">
@@ -434,8 +599,7 @@
               <td class="flag-name">N</td>
               <td>Negative</td>
               <td>
-                Result bit 31 = 1 (i.e. result is negative in signed
-                interpretation)
+                Result bit 31 = 1 (result is negative in signed interpretation)
               </td>
             </tr>
             <tr>
@@ -446,7 +610,9 @@
             <tr>
               <td class="flag-name">C</td>
               <td>Carry</td>
-              <td>ADD: unsigned overflow; SUB/CMP: no borrow (rn ≥ val2)</td>
+              <td>
+                ADD: unsigned overflow; SUB/CMP/RSB: no borrow (rn ≥ val2)
+              </td>
             </tr>
             <tr>
               <td class="flag-name">V</td>
@@ -456,12 +622,13 @@
           </tbody>
         </table>
         <div class="note">
-          <b>S-bit rule:</b> Flags are only updated when the S bit (bit 20) is
-          set in the encoding. CMP always sets S=1. Plain ADD/SUB/etc. have S=0
-          and leave flags unchanged.
+          <b>S-bit rule:</b> Flags are updated only when the S bit (bit 20) is
+          set. CMP and TST always set S=1. Plain ADD/SUB/etc. have S=0 and leave
+          flags unchanged.
         </div>
       </div>
 
+      <!-- ── Quick Reference ── -->
       <div class="docs-section">
         <h2>Quick Reference</h2>
         <p style="color: #666; font-size: 12px; margin: 0 0 6px">
@@ -469,23 +636,29 @@
         </p>
         <div class="pill-row">
           <span class="pill">MOV</span><span class="pill">ADD</span
-          ><span class="pill">SUB</span> <span class="pill">CMP</span
-          ><span class="pill">AND</span><span class="pill">ORR</span>
-          <span class="pill">EOR</span><span class="pill">MVN</span
-          ><span class="pill">MUL</span> <span class="pill">DIV</span
-          ><span class="pill">LDR</span><span class="pill">STR</span>
-          <span class="pill">PSH</span><span class="pill">PUSH</span
-          ><span class="pill">POP</span> <span class="pill">B</span
-          ><span class="pill">BEQ</span><span class="pill">BNE</span>
-          <span class="pill">BLT</span><span class="pill">BGT</span
-          ><span class="pill">BGE</span> <span class="pill">BLE</span
-          ><span class="pill">JMS</span><span class="pill">RET</span>
-          <span class="pill">HLT</span><span class="pill">INP</span
-          ><span class="pill">OUT</span> <span class="pill">INC</span
-          ><span class="pill">DEC</span><span class="pill">CLR</span>
-          <span class="pill">LSL</span><span class="pill">LSR</span
-          ><span class="pill">MOD</span> <span class="pill">SWAP</span
-          ><span class="pill">SWP</span><span class="pill">LOOP</span>
+          ><span class="pill">SUB</span> <span class="pill">RSB</span
+          ><span class="pill">CMP</span><span class="pill">TST</span>
+          <span class="pill">AND</span><span class="pill">ORR</span
+          ><span class="pill">EOR</span> <span class="pill">BIC</span
+          ><span class="pill">MVN</span><span class="pill">MUL</span>
+          <span class="pill">DIV</span><span class="pill">LDR</span
+          ><span class="pill">STR</span> <span class="pill">LDRB</span
+          ><span class="pill">STRB</span><span class="pill">PSH</span>
+          <span class="pill">PUSH</span><span class="pill">POP</span
+          ><span class="pill">B</span> <span class="pill">BEQ</span
+          ><span class="pill">BNE</span><span class="pill">BLT</span>
+          <span class="pill">BGT</span><span class="pill">BGE</span
+          ><span class="pill">BLE</span> <span class="pill">JMS</span
+          ><span class="pill">RET</span><span class="pill">HLT</span>
+          <span class="pill">INP</span><span class="pill">OUT</span
+          ><span class="pill">INC</span> <span class="pill">DEC</span
+          ><span class="pill">CLR</span><span class="pill">NOT</span>
+          <span class="pill">NEG</span><span class="pill">LSL</span
+          ><span class="pill">LSR</span> <span class="pill">ABS</span
+          ><span class="pill">ROL</span><span class="pill">ROR</span>
+          <span class="pill">MOD</span><span class="pill">SWAP</span
+          ><span class="pill">SWP</span> <span class="pill">LOOP</span
+          ><span class="pill">CALL</span><span class="pill">HALT</span>
         </div>
       </div>
     </div>

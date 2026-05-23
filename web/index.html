@@ -28,10 +28,22 @@
 
       <div id="btn-bar">
         <button class="btn-primary" onclick="assembleAndRun()">
-          ▶ Assemble &amp; Run
+          &#9654; Assemble &amp; Run
         </button>
-        <button class="btn-secondary" onclick="resetProgram()">↺ Reset</button>
-        <button class="btn-docs" onclick="goToDocs()">⊞ Instructions</button>
+        <button class="btn-secondary" onclick="resetProgram()">
+          &#8634; Reset
+        </button>
+        <button class="btn-debug" onclick="startDebug()">&#9650; Debug</button>
+        <button class="btn-docs" onclick="goToDocs()">
+          &#8862; Instructions
+        </button>
+      </div>
+
+      <div id="debug-bar" class="hidden">
+        <button class="btn-step" onclick="stepDebug()">Step &#8594;</button>
+        <button class="btn-run" onclick="runDebug()">Run &#187;</button>
+        <button class="btn-stop" onclick="stopDebug()">&#10005; Stop</button>
+        <span id="debug-status"></span>
       </div>
     </div>
 
