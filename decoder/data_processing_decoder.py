@@ -1,65 +1,79 @@
 def decode_data_processing_instruction(instruction: int, regs: list, flags: dict):
-    """
-    Decode and execute data-processing instructions (ADD, SUB, MOV, CMP)
-    flags: dict with keys 'N', 'Z', 'C', 'V'
-    """
-    opcode = (instruction >> 21) & 0xF
-    I = (instruction >> 25) & 1
-    S = (instruction >> 20) & 1
-    rn_idx = (instruction >> 16) & 0xF
-    rd_idx = (instruction >> 12) & 0xF
+    opcode   = (instruction >> 21) & 0xF
+    I        = (instruction >> 25) & 1
+    S        = (instruction >> 20) & 1
+    rn_idx   = (instruction >> 16) & 0xF
+    rd_idx   = (instruction >> 12) & 0xF
     operand2 = instruction & 0xFFF
-
+ 
     if I:
         rotate = ((operand2 >> 8) & 0xF) * 2
-        imm8 = operand2 & 0xFF
-        val2 = ((imm8 >> rotate) | ((imm8 << (32 - rotate)) & 0xFFFFFFFF)) & 0xFFFFFFFF
+        imm8   = operand2 & 0xFF
+        val2   = ((imm8 >> rotate) | (imm8 << (32 - rotate))) & 0xFFFFFFFF
     else:
-        val2 = regs[operand2 & 0xF]
-
+        val2 = regs[operand2 & 0xF] & 0xFFFFFFFF
+ 
     rn_val = regs[rn_idx] & 0xFFFFFFFF
-    
-    if opcode == 0b0100:  # ADD
+ 
+    if opcode == 0b0100:        # ADD
         result = (rn_val + val2) & 0xFFFFFFFF
         regs[rd_idx] = result
         if S: update_flags(flags, result, rn_val, val2, "add")
-
-    elif opcode == 0b0010:  # SUB
+ 
+    elif opcode == 0b0010:      # SUB
         result = (rn_val - val2) & 0xFFFFFFFF
         regs[rd_idx] = result
         if S: update_flags(flags, result, rn_val, val2, "sub")
-
-    elif opcode == 0b0000:  # AND
+ 
+    elif opcode == 0b0011:      # RSB  (reverse subtract: Rd = val2 - Rn)
+        result = (val2 - rn_val) & 0xFFFFFFFF
+        regs[rd_idx] = result
+        if S: update_flags(flags, result, val2, rn_val, "sub")
+ 
+    elif opcode == 0b0000:      # AND
         result = (rn_val & val2) & 0xFFFFFFFF
         regs[rd_idx] = result
         if S: update_flags(flags, result, rn_val, val2, "logic")
-
-    elif opcode == 0b1100:  # ORR
+ 
+    elif opcode == 0b1100:      # ORR
         result = (rn_val | val2) & 0xFFFFFFFF
         regs[rd_idx] = result
         if S: update_flags(flags, result, rn_val, val2, "logic")
-
-    elif opcode == 0b0001:  # EOR
+ 
+    elif opcode == 0b0001:      # EOR
         result = (rn_val ^ val2) & 0xFFFFFFFF
         regs[rd_idx] = result
         if S: update_flags(flags, result, rn_val, val2, "logic")
-
-    elif opcode == 0b1111:  # MVN
+ 
+    elif opcode == 0b1110:      # BIC  (bit clear: Rd = Rn & ~val2)
+        result = (rn_val & (~val2)) & 0xFFFFFFFF
+        regs[rd_idx] = result
+        if S: update_flags(flags, result, rn_val, val2, "logic")
+ 
+    elif opcode == 0b1111:      # MVN
         result = (~val2) & 0xFFFFFFFF
         regs[rd_idx] = result
-        if S: update_flags(flags, result, rn_val, val2, "logic")
-
-    elif opcode == 0b1101:  # MOV
+        if S: update_flags(flags, result, 0, val2, "logic")
+ 
+    elif opcode == 0b1101:      # MOV
         result = val2 & 0xFFFFFFFF
         regs[rd_idx] = result
-        if S: update_flags(flags, result, rn_val, val2, "logic")
-
-    elif opcode == 0b1010:  # CMP
-        result = (regs[rn_idx] - val2) & 0xFFFFFFFF
-        if S: update_flags(flags, result, rn_val, val2, "sub")
-        
+        if S: update_flags(flags, result, 0, val2, "logic")
+ 
+    elif opcode == 0b1010:      # CMP  (always sets flags, never writes Rd)
+        result = (rn_val - val2) & 0xFFFFFFFF
+        update_flags(flags, result, rn_val, val2, "sub")
+ 
+    elif opcode == 0b1000:      # TST  (flags from Rn & val2, never writes Rd)
+        result = (rn_val & val2) & 0xFFFFFFFF
+        update_flags(flags, result, rn_val, val2, "logic")
+ 
+    elif opcode == 0b1001:      # TEQ  (flags from Rn ^ val2, never writes Rd)
+        result = (rn_val ^ val2) & 0xFFFFFFFF
+        update_flags(flags, result, rn_val, val2, "logic")
+ 
     else:
-        raise NotImplementedError(f"Opcode {opcode} not implemented")
+        raise NotImplementedError(f"Data-processing opcode 0b{opcode:04b} not implemented")
 
 def update_flags(flags: dict, result32: int, rn_val: int, val2: int, op: str):
     """
