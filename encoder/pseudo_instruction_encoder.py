@@ -1,10 +1,9 @@
 from typing import Dict, List, Union, Optional
 from .data_processing_encoder import encode_data_processing_instruction
 from .multiplication_set_encoder import encode_multiply_or_div_instruction
-from .stack_set_encoder import encode_stack_instruction
 from .branch_encoder import encode_branch
 
-def encode__pseudo_instruction(instruction: str, parts: list, current_place: int, labels: Dict[str, int]) -> int:
+def encode_pseudo_instruction(instruction: str, parts: list, current_place: int, labels: Dict[str, int]) -> int:
     """
     Encode pseudo-instructions: INC, DEC, CLR
     """
