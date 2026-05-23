@@ -2,11 +2,17 @@
 OPCODES = {
     "ADD": 0b0100 << 21, # ADD (addition), Example: ADD R0, R1, R2 -> R0 = R1 + R2
     "SUB": 0b0010 << 21, # SUB (subtract), Example: SUB R2, R0, R1 -> R2 = R0 - R1
+    "RSB": 0b0011 << 21, # reverse subtract: Rd = op2 - Rn
+    "ADC": 0b0101 << 21, # add with carry
+    "SBC": 0b0110 << 21, # subtract with carry
     "MOV": 0b1101 << 21, # MOV (move / immediate load), Example: MOV R0, #5 -> R0 = 5
     "CMP": 0b1010 << 21, # CMP (compare), Example: CMP Rn, Operand2 -> sets flags
+    "TST": 0b1000 << 21, # test bits: flags from Rn & op2, no Rd written
+    "TEQ": 0b1001 << 21, # test equivalence: flags from Rn ^ op2, no Rd written
     "AND": 0b0000 << 21, # AND (logic and), Example: AND R0, R1, R2 -> R0 = R1 & R2
     "ORR": 0b1100 << 21, # ORR (logic or), Example: AND R0, R1, R2 -> R0 = R1 | R2
     "EOR": 0b0001 << 21, # XOR (exclusive or), , Example: EOR R0, R1, R2 -> R0 = R1 ^ R2
+    "BIC": 0b1110 << 21, # bit clear: Rd = Rn & ~op2
     "MVN": 0b1111 << 21, # MVN (not), Example: MVN R0, R1 -> R0 = ~R1
 }
 
@@ -19,6 +25,7 @@ CONDITION_CODES = {
     "GT": 0b1100 << 28,  # signed greater than
     "LE": 0b1101 << 28,  # signed less or equal
     "AL": 0b1110 << 28,  # always (default)
+    "PL": 0b0101 << 28,  # plus / non-negative (N=0), used internally by ABS
 }
 
 COND_ALWAYS = CONDITION_CODES["AL"]
