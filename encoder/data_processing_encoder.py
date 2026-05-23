@@ -1,37 +1,29 @@
 """
-Data processing (ADD, SUB, MOV, CMP, AND, ORR, EOR): cond|00|I|opcode|S|Rn|Rd|operand2
+Data processing: cond|00|I|opcode|S|Rn|Rd|operand2
+ 
+New opcodes added:
+  RSB  Rd, Rn, op2    ->  Rd = op2 - Rn          (opcode 0b0011)
+  TST  Rn, op2        ->  flags from Rn & op2     (opcode 0b1000, S=1, no Rd)
+  BIC  Rd, Rn, op2    ->  Rd = Rn & ~op2          (opcode 0b1110)
 """
 
 from .helpers import register_to_number, encode_immediate_value, COND_ALWAYS, OPCODES
 
 def encode_data_processing_instruction (instruction: str, parts: list) -> int:
-    """
-      MOV Rd, #imm
-      MOV Rd, Rn
-      ADD Rd, Rn, Rm
-      ADD Rd, Rn, #imm
-      ADD Rd, Rm/#imm       
-      SUB Rd, Rn, Rm
-      SUB Rd, Rn, #imm
-      SUB Rd, Rm/#imm   
-      CMP Rn, Rm
-      CMP Rn, #imm
-      AND Rd, Rn, Rm
-      AND Rd, Rn, #imm
-      AND Rd, Rm/#imm 
-      ORR Rd, Rn, Rm
-      ORR Rd, Rn, #imm
-      ORR Rd, Rm/#imm  
-      EOR Rd, Rn, Rm
-      EOR Rd, Rn, #imm
-      EOR Rd, Rm/#imm  
-    """
+
     opcode = OPCODES[instruction]
 
-    if instruction in ["CMP"] : S = 1 
-    else: S = 0
+    # Instructions that always set flags and never write Rd
+    FLAG_ONLY = {"CMP", "TST", "TEQ"}
+    S = 1 if instruction in FLAG_ONLY else 0
 
-    if instruction in ["ADD", "SUB", "AND", "ORR", "EOR", "MVN"]:
+    if instruction in FLAG_ONLY:
+        rn = register_to_number(parts[0].rstrip(","))
+        I = 1 if parts[1].startswith("#") else 0
+        operand2 = encode_immediate_value(int(parts[1][1:], 0)) if I else register_to_number(parts[1])
+        return COND_ALWAYS | (0 << 26) | (I << 25) | opcode | (S << 20) | (rn << 16) | operand2
+
+    if instruction in ["ADD", "SUB", "RSB", "AND", "ORR", "EOR", "BIC", "MVN"]:
         if len(parts) == 2: # ADD R0, R1 -> R0 += R1
             rd = register_to_number(parts[0].rstrip(","))
             rn = rd
@@ -72,16 +64,4 @@ def encode_data_processing_instruction (instruction: str, parts: list) -> int:
 
         machine_instruction = COND_ALWAYS | (0 << 26) | (I << 25) | OPCODES[instruction] | (S << 20) | (rn << 16) | (rd << 12) | operand2
     
-        return machine_instruction
-
-    if instruction == "CMP":
-        rn = register_to_number(parts[0].rstrip(","))
-        I = 1 if parts[1].startswith("#") else 0
-
-        if I:
-            operand2 = encode_immediate_value(int(parts[1][1:], 0))
-        else:
-            operand2 = register_to_number(parts[1])
-        
-        machine_instruction = COND_ALWAYS | (0 << 26) | (I << 25) | opcode | (S << 20) | (rn << 16) | operand2
         return machine_instruction
