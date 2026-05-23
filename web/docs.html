@@ -472,7 +472,14 @@
             <tr>
               <td class="mnemonic">ROL</td>
               <td class="syntax">ROL Rd, Rn, #n<br />ROL Rd, #n</td>
-              <td class="enc">6 words — saves Rn→R11, shifts via R12</td>
+              <td class="enc">
+                MOV R11, Rn <br />
+                MOV R12, #(1&lt;&lt;n)<br />
+                MUL Rd, R11, R12<br />
+                MOV R12, #(1&lt;&lt;(32-n)) <br />
+                DIV R12, R11, R12 <br />
+                ORR Rd, Rd, R12
+              </td>
               <td class="desc">
                 Rotate left by n bits (1..31). Clobbers R11, R12.
               </td>
@@ -480,7 +487,11 @@
             <tr>
               <td class="mnemonic">ROR</td>
               <td class="syntax">ROR Rd, Rn, #n<br />ROR Rd, #n</td>
-              <td class="enc">6 words — saves Rn→R11, shifts via R12</td>
+              <td class="enc">
+                MOV R11, Rn <br />MOV R12, #(1&lt;&lt;n) <br />DIV Rd, R11, R12
+                <br />MOV R12, #(1&lt;&lt;(32-n))<br />
+                MUL R12, R11, R12 <br />ORR Rd, Rd, R12
+              </td>
               <td class="desc">
                 Rotate right by n bits (1..31). Clobbers R11, R12.
               </td>
