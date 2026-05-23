@@ -1,5 +1,12 @@
 # ARM Assembly Simulator
 
+A browser-based 32-bit ARM-inspired CPU simulator — write assembly, assemble it, watch registers and memory change, and step through execution with the built-in debugger.
+
+**Live demo:** https://arm-assembly-simulator.onrender.com  
+**Documentation:** [`Documentation_ARM_Assembly_Simulator.docx`](Documentation_ARM_Assembly_Simulator.docx)
+
+---
+
 ## Project Description
 
 The **ARM Assembly Simulator** is a modular Python-based tool that emulates the behavior of a simplified ARM-like processor.  
@@ -16,15 +23,53 @@ Together, these components form a lightweight yet realistic model of an ARM-styl
 
 ---
 
-## Features
+## Instruction Set Summary
 
-- **Data Processing Instructions** – `MOV`, `ADD`, `SUB`, `CMP`, `AND`, `ORR`, `EOR`, `MVN`
-- **Stack Operations** – `PUSH`, `POP` using R13 (SP)
-- **Data Transfer Instructions** – `LDR`, `STR`
-- **Branching** – `B`, `BL`, `RET`, `BEQ`, `BNE`, etc.
-- **System Instructions** – `HLT`, `INP`, `OUT`
-- **Pseudo-Instructions** – `INC`, `DEC`, `CLR`, `LSL`, `LSR`, `MOD`, `SWAP`
-- **Debug Tools** – memory dump, register dump, and visualization helpers
+### Real instructions
+
+| Group               | Mnemonics                                                         |
+| ------------------- | ----------------------------------------------------------------- |
+| Data processing     | `MOV` `ADD` `SUB` `RSB` `CMP` `TST` `AND` `ORR` `EOR` `BIC` `MVN` |
+| Multiply / divide   | `MUL` `DIV`                                                       |
+| Load / store (word) | `LDR` `STR`                                                       |
+| Load / store (byte) | `LDRB` `STRB`                                                     |
+| Stack               | `PSH` / `PUSH` `POP`                                              |
+| Branch              | `B` `BEQ` `BNE` `BLT` `BGT` `BGE` `BLE` `JMS` `RET`               |
+| System              | `HLT` `INP` `OUT`                                                 |
+
+### Pseudo-instructions (assembler-expanded, no stack spill)
+
+| Pseudo           | Expands to                         | Notes                     |
+| ---------------- | ---------------------------------- | ------------------------- |
+| `INC Rd`         | `ADD Rd, Rd, #1`                   | 1 word                    |
+| `DEC Rd`         | `SUB Rd, Rd, #1`                   | 1 word                    |
+| `CLR Rd`         | `MOV Rd, #0`                       | 1 word                    |
+| `NOT Rd`         | `MVN Rd, Rd`                       | 1 word                    |
+| `NEG Rd, Rn`     | `RSB Rd, Rn, #0`                   | 1 word                    |
+| `LSL Rd, Rn, #n` | `MOV R12 + MUL`                    | 2 words                   |
+| `LSR Rd, Rn, #n` | `MOV R12 + DIV`                    | 2 words                   |
+| `ABS Rd, Rn`     | `CMP + MOV + BGE + RSB`            | 4 words                   |
+| `ROL Rd, Rn, #n` | save R11 + shift both halves + ORR | 6 words, clobbers R11 R12 |
+| `ROR Rd, Rn, #n` | save R11 + shift both halves + ORR | 6 words, clobbers R11 R12 |
+| `MOD Rd, Rn, Rm` | `DIV + MUL + SUB` via R12          | 3 words                   |
+| `SWAP Rn, Rm`    | `3× MOV` via R12                   | 3 words                   |
+| `LOOP label`     | `SUB + CMP + BNE` via R12          | 3 words                   |
+| `CALL label`     | `JMS label`                        | alias                     |
+| `HALT`           | `HLT`                              | alias                     |
+
+**Scratch registers:** R12 is the primary scratch for all pseudos. R11 is additionally used by ROL/ROR. Do not use R11 or R12 as operands to ROL/ROR, and avoid using R12 as a loop counter inside a loop body that also calls MOD.
+
+---
+
+## Debugger
+
+Click **▲ Debug** to enter debug mode:
+
+- **Step →** — execute one instruction; current line highlighted in the editor, changed registers marked with a green dot
+- **Run »** — run continuously at ~120 ms/step
+- **✕ Stop** — exit debug mode
+
+The debugger is server-side session-based. State is serialised between steps so the browser can be refreshed without losing progress (within the 30-minute session window).
 
 ---
 
