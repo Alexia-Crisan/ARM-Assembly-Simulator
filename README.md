@@ -3,7 +3,7 @@
 A browser-based 32-bit ARM-inspired CPU simulator — write assembly, assemble it, watch registers and memory change, and step through execution with the built-in debugger.
 
 **Live demo:** https://arm-assembly-simulator.onrender.com  
-**Documentation:** [`Documentation_ARM_Assembly_Simulator.docx`](Documentation_ARM_Assembly_Simulator.docx)
+**Documentation:** [Documentation](./_docu/ARM_Assembly_Simulator_V2.pdf)
 
 ---
 
