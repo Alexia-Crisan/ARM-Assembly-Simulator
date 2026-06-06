@@ -209,9 +209,9 @@ function renderDebugState(data) {
   const { registers, flags, steps, halted, pc, changed_registers,
           instruction_memory, data_memory } = data;
 
-  // highlight current source line
-  const pcStr    = String(pc);
-  const lineIdx  = _addrToLine[pcStr];
+  const execPcStr = data.executed_pc !== null && data.executed_pc !== undefined
+    ? String(data.executed_pc) : null;
+  const lineIdx = execPcStr !== null ? (_addrToLine[execPcStr] ?? undefined) : undefined;
   if (lineIdx !== undefined && !halted) {
     highlightLine(lineIdx);
   } else if (halted) {
@@ -232,7 +232,7 @@ function renderDebugState(data) {
   // current instruction label
   const curInstrText = (!halted && lineIdx !== undefined && _instrLines[lineIdx])
     ? _instrLines[lineIdx]
-    : (halted ? "— halted —" : "");
+    : (halted ? "- halted -" : "");
 
   renderResults(
     { registers, flags, instruction_memory, data_memory, steps },
@@ -249,8 +249,6 @@ let _overlayEl = null;
 function highlightLine(instrIdx) {
   clearLineHighlight();
 
-  // Find which visual line in the textarea corresponds to instrIdx
-  // We need to map instruction index -> line number in the raw source
   const srcLines = codeArea.value.split("\n");
   let instrCount = 0;
   let targetLineNum = -1;
@@ -261,17 +259,16 @@ function highlightLine(instrIdx) {
       if (stripped.includes(sep)) stripped = stripped.split(sep)[0].trim();
     }
     if (!stripped || stripped.endsWith(":")) continue;
-    // inline label: "ok: MOV R1, #1" — the instruction part counts
+
     if (instrCount === instrIdx) { targetLineNum = i; break; }
     instrCount++;
   }
 
   if (targetLineNum < 0) return;
 
-  // Create an overlay div that sits on top of the textarea
   const wrapper  = document.getElementById("editor-wrapper");
-  const lineH    = 21;   // matches CSS line-height
-  const padTop   = 10;   // matches textarea padding-top
+  const lineH    = 21;
+  const padTop   = 10;
   const scrollY  = codeArea.scrollTop;
 
   _overlayEl = document.createElement("div");
@@ -280,7 +277,6 @@ function highlightLine(instrIdx) {
   _overlayEl.style.height = `${lineH}px`;
   wrapper.appendChild(_overlayEl);
 
-  // keep overlay in sync with scroll
   codeArea._hlLine = targetLineNum;
   codeArea._hlScrollHandler = () => {
     if (_overlayEl) {
@@ -356,7 +352,7 @@ function renderResults({ registers, flags, instruction_memory, data_memory, step
   document.getElementById("results").innerHTML = `
     ${instrBanner}
     <div class="section">
-      <h3>Registers — after ${steps} instruction${steps !== 1 ? "s" : ""}</h3>
+      <h3>Registers - after ${steps} instruction${steps !== 1 ? "s" : ""}</h3>
       <table>
         <thead><tr><th>Register</th><th>Hex</th><th>Decimal</th></tr></thead>
         <tbody>${regRows}</tbody>

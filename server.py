@@ -41,7 +41,7 @@ def _session_from_cpu(cpu: CPU) -> dict:
     }
 
 
-def _state_response(s: dict, prev_regs=None) -> dict:
+def _state_response(s: dict, prev_regs = None, executed_pc = None) -> dict:
     changed = []
     if prev_regs:
         changed = [i for i in range(16) if s["regs"][i] != prev_regs[i]]
@@ -51,6 +51,7 @@ def _state_response(s: dict, prev_regs=None) -> dict:
         "steps":              s["steps"],
         "halted":             s["halted"],
         "pc":                 s["regs"][15],
+        "executed_pc":        executed_pc,
         "changed_registers":  changed,
         "instruction_memory": _dump_region(s["memory_bytes"], 0, len(s["memory_bytes"]) // 2),
         "data_memory":        _dump_region(s["memory_bytes"], len(s["memory_bytes"]) // 2, len(s["memory_bytes"])),
@@ -192,7 +193,7 @@ def debug_step():
     s["steps"]  += 1
     s["halted"]  = not cpu.running
 
-    resp = _state_response(s, prev_regs)
+    resp = _state_response(s, prev_regs, executed_pc = prev_regs[15])
     resp["session_id"] = session_id
     return jsonify(resp)
 
