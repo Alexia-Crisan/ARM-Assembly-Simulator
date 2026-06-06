@@ -76,14 +76,6 @@
       </div>
 
       <button class="btn-macro-add" onclick="addMacroRow()">+ Add Macro</button>
-
-      <div class="macros-note">
-        Parameters are substituted by name at assemble time. Example: name
-        <code>TRIPLE</code>, params <code>Rd, Rn</code>, body:
-        <code>MOV R12, Rn / ADD Rd, R12, Rn / ADD Rd, Rd, Rn</code>. Use
-        <code>TRIPLE R1, R0</code> in your program. Macros cannot call
-        themselves.
-      </div>
     </div>
 
     <div id="output">
