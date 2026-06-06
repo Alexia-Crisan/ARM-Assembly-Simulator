@@ -1,3 +1,4 @@
+import re
 from encoder.encoder import encode_instruction
 from typing import List, Dict
 
@@ -98,3 +99,88 @@ def assemble_to_machine_code(lines: List[str]) -> List[int]:
             pc += 4
 
     return machine_codes
+
+def expand_user_pseudo(
+    name: str,
+    defn: dict,
+    actual_args: List[str],
+    current_place: int,
+    labels: Dict[str, int],
+    user_pseudos: dict,
+) -> List[int]:
+    """ 
+    defn format expected from the frontend:
+        { 'params': ['Rd', 'Rn', ...], 'body': ['ADD Rd, Rn, #1', ...] }
+ 
+    actual_args  — argument tokens from the call site (e.g. ['R0', 'R1'])
+    current_place — byte address of the first word this expansion will occupy
+    labels        — current label map (needed if body lines contain branches)
+    user_pseudos  — full user pseudo dict, passed through for nested resolution
+ 
+    Rules enforced:
+      1. Argument count must match parameter count.
+      2. Body lines must not call the same pseudo (no recursion).
+      3. Substitution is token-aware via word-boundary regex so e.g. 'Rn'
+         never partially matches 'R10'.
+    """
+    params = defn.get("params", [])
+    body   = defn.get("body",   [])
+ 
+    if len(actual_args) != len(params):
+        raise ValueError(
+            f"User pseudo '{name}' expects {len(params)} argument(s) "
+            f"({', '.join(params)}), got {len(actual_args)}"
+        )
+ 
+    words = []
+    place = current_place
+ 
+    for body_line in body:
+        body_line = body_line.strip()
+        if not body_line:
+            continue
+ 
+        first_token = body_line.split()[0].upper()
+        if first_token == name.upper():
+            raise ValueError(
+                f"User pseudo '{name}' cannot call itself (recursion not allowed)"
+            )
+ 
+        expanded = body_line
+        for param, arg in sorted(
+            zip(params, actual_args), key=lambda pa: -len(pa[0])
+        ):
+            expanded = re.sub(r"\b" + re.escape(param) + r"\b", arg, expanded)
+ 
+        result = _encode_with_user_pseudos(expanded, place, labels, user_pseudos)
+        if isinstance(result, list):
+            words.extend(result)
+            place += len(result) * 4
+        else:
+            words.append(result)
+            place += 4
+ 
+    return words
+ 
+ 
+def _encode_with_user_pseudos(
+    line: str,
+    current_place: int,
+    labels: Dict[str, int],
+    user_pseudos: dict,
+) -> object:
+    tokens   = line.replace(",", " ").split()
+    mnemonic = tokens[0].upper() if tokens else ""
+    user_pseudo_map = {k.upper(): k for k in user_pseudos}
+    if mnemonic in user_pseudo_map:
+        key  = user_pseudo_map[mnemonic]
+        defn = user_pseudos[key]
+ 
+        rest     = line[line.upper().index(mnemonic) + len(mnemonic):]
+        raw_args = [a.strip() for a in re.split(r"[,\s]+", rest.strip()) if a.strip()]
+ 
+        return expand_user_pseudo(
+            key, defn, raw_args, current_place, labels, user_pseudos
+        )
+ 
+    return encode_instruction(line, current_place, labels)
