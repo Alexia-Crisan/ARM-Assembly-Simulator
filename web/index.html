@@ -34,6 +34,9 @@
           &#8634; Reset
         </button>
         <button class="btn-debug" onclick="startDebug()">&#9650; Debug</button>
+        <button class="btn-macros" onclick="toggleMacros()">
+          &#8853; Macros
+        </button>
         <button class="btn-docs" onclick="goToDocs()">
           &#8862; Instructions
         </button>
@@ -44,6 +47,42 @@
         <button class="btn-run" onclick="runDebug()">Run &#187;</button>
         <button class="btn-stop" onclick="stopDebug()">&#10005; Stop</button>
         <span id="debug-status"></span>
+      </div>
+    </div>
+
+    <div id="macros-panel" class="hidden">
+      <div id="macros-header">
+        <h2>User Macros</h2>
+        <span id="macros-hint"
+          >Define custom pseudo-instructions. Use parameter names (e.g. Rd, Rn)
+          in the body.</span
+        >
+      </div>
+
+      <div id="macros-table-wrap">
+        <table id="macros-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Parameters <span class="th-hint">(comma-separated)</span></th>
+              <th>
+                Body <span class="th-hint">(one instruction per line)</span>
+              </th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="macros-body"></tbody>
+        </table>
+      </div>
+
+      <button class="btn-macro-add" onclick="addMacroRow()">+ Add Macro</button>
+
+      <div class="macros-note">
+        Parameters are substituted by name at assemble time. Example: name
+        <code>TRIPLE</code>, params <code>Rd, Rn</code>, body:
+        <code>MOV R12, Rn / ADD Rd, R12, Rn / ADD Rd, Rd, Rn</code>. Use
+        <code>TRIPLE R1, R0</code> in your program. Macros cannot call
+        themselves.
       </div>
     </div>
 
