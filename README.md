@@ -37,7 +37,7 @@ Together, these components form a lightweight yet realistic model of an ARM-styl
 | Branch              | `B` `BEQ` `BNE` `BLT` `BGT` `BGE` `BLE` `JMS` `RET`               |
 | System              | `HLT` `INP` `OUT`                                                 |
 
-### Pseudo-instructions (assembler-expanded, no stack spill)
+### Pseudo-instructions
 
 | Pseudo           | Expands to                         | Notes                     |
 | ---------------- | ---------------------------------- | ------------------------- |
