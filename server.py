@@ -94,7 +94,7 @@ def run_program():
         return jsonify({"error": "No assembly code provided"}), 400
 
     try:
-        machine_code = assemble_to_machine_code(cleaned)
+        machine_code = assemble_to_machine_code(cleaned, user_pseudos)
     except Exception as e:
         return jsonify({"error": f"Assembler error: {e}"}), 400
 
@@ -129,13 +129,14 @@ def debug_start():
 
     data        = request.get_json()
     source_code = data.get("code", "")
+    user_pseudos = data.get("user_pseudos", {})
     cleaned     = clean_lines(source_code.splitlines())
 
     if not cleaned:
         return jsonify({"error": "No assembly code provided"}), 400
 
     try:
-        machine_code, addr_to_line = assemble_with_map(cleaned)
+        machine_code, addr_to_line = assemble_with_map(cleaned, user_pseudos)
     except Exception as e:
         return jsonify({"error": f"Assembler error: {e}"}), 400
 
@@ -212,13 +213,14 @@ def reset():
 
 # ── assembler helper ──────────────────────────────────────────────────
 
-def assemble_with_map(cleaned: list):
+def assemble_with_map(cleaned: list, user_pseudos: dict = {}):
     """
     Assemble and return (machine_codes, addr_to_line).
     addr_to_line maps byte address -> index into the cleaned source line list
     (labels excluded, so it maps to instruction lines only).
     """
     from encoder.encoder import encode_instruction
+    from assembler import encode_with_user_pseudos
 
     labels      = {}
     instr_lines = []
@@ -240,7 +242,7 @@ def assemble_with_map(cleaned: list):
             labels_final[line[:-1].strip()] = pc
         else:
             try:
-                result = encode_instruction(line, pc, labels)
+                result = encode_with_user_pseudos(line, pc, labels, user_pseudos)
             except Exception:
                 result = 0
             pc += (len(result) if isinstance(result, list) else 1) * 4
@@ -254,7 +256,7 @@ def assemble_with_map(cleaned: list):
     for line in cleaned:
         if line.endswith(":"):
             continue
-        code = encode_instruction(line, pc, labels_final)
+        code = encode_with_user_pseudos(line, pc, labels_final, user_pseudos)
         if isinstance(code, list):
             for word in code:
                 addr_to_line[pc] = line_idx
