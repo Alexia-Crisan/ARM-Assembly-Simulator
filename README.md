@@ -1,6 +1,6 @@
 # ARM Assembly Simulator
 
-A browser-based 32-bit ARM-inspired CPU simulator — write assembly, assemble it, watch registers and memory change, and step through execution with the built-in debugger.
+A browser-based 32-bit ARM-inspired CPU simulator - write assembly, assemble it, watch registers and memory change, and step through execution with the built-in debugger.
 
 **Live demo:** https://arm-assembly-simulator.onrender.com  
 **Documentation:** [ARM Assembly Simulator Documentation](_docu/ARM_Assembly_Simulator_V2.pdf)
@@ -65,11 +65,34 @@ Together, these components form a lightweight yet realistic model of an ARM-styl
 
 Click **▲ Debug** to enter debug mode:
 
-- **Step →** — execute one instruction; current line highlighted in the editor, changed registers marked with a green dot
-- **Run »** — run continuously at ~120 ms/step
-- **✕ Stop** — exit debug mode
+- **Step ->** - execute one instruction; current line highlighted in the editor, changed registers marked with a green dot
+- **Run »** - run continuously at ~120 ms/step
+- **✕ Stop** - exit debug mode
 
 The debugger is server-side session-based. State is serialised between steps so the browser can be refreshed without losing progress (within the 30-minute session window).
+
+---
+
+## User-Defined Macros
+
+Click **⊕ Macros** to open the macro panel alongside the editor. Macros are custom pseudo-instructions the user defines - they are expanded by the assembler at assemble time, exactly like built-in pseudos, with no runtime overhead.
+
+Each macro has three fields:
+
+| Field      | Description                                                                 | Example                                              |
+| ---------- | --------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Name       | The mnemonic you use in your program. Case-insensitive.                     | `TRIPLE`                                             |
+| Parameters | Comma-separated placeholder names used in the body.                         | `Rd, Rn`                                             |
+| Body       | One instruction per line. Parameter names are substituted at assemble time. | `MOV R12, Rn` ↵ `ADD Rd, R12, Rn` ↵ `ADD Rd, Rd, Rn` |
+
+After defining `TRIPLE` with params `Rd, Rn` and the body above, write `TRIPLE R1, R0` in your program - the assembler substitutes `Rd->R1`, `Rn->R0` and emits 3 machine words.
+
+**Rules:**
+
+- Macros cannot call themselves (no recursion).
+- Parameter substitution is token-aware - a param named `Rn` will not accidentally match inside `R10`.
+- Macros are included automatically in every Assemble & Run and Debug session for the duration of the page.
+- The assembler correctly accounts for macro word counts when resolving label addresses.
 
 ---
 
