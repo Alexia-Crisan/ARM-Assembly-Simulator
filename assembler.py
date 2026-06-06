@@ -43,7 +43,7 @@ def clean_lines(lines: List[str]) -> List[str]:
     return cleaned
 
 
-def assemble_to_machine_code(lines: List[str]) -> List[int]:
+def assemble_to_machine_code(lines: List[str], user_pseudos: dict = {}) -> List[int]:
 
     # separate labels from instructions
     raw_labels: Dict[str, int] = {}
@@ -78,7 +78,7 @@ def assemble_to_machine_code(lines: List[str]) -> List[int]:
             labels[value] = pc
         else:
             try:
-                result = encode_instruction(value, pc, raw_labels)
+                result = encode_with_user_pseudos(value, pc, raw_labels, user_pseudos)
             except Exception:
                 result = 0
 
@@ -90,7 +90,7 @@ def assemble_to_machine_code(lines: List[str]) -> List[int]:
     pc = 0
 
     for line in instruction_lines:
-        code = encode_instruction(line, pc, labels)
+        code = encode_with_user_pseudos(line, pc, labels, user_pseudos)
         if isinstance(code, list):
             machine_codes.extend(code)
             pc += len(code) * 4
@@ -108,21 +108,6 @@ def expand_user_pseudo(
     labels: Dict[str, int],
     user_pseudos: dict,
 ) -> List[int]:
-    """ 
-    defn format expected from the frontend:
-        { 'params': ['Rd', 'Rn', ...], 'body': ['ADD Rd, Rn, #1', ...] }
- 
-    actual_args  — argument tokens from the call site (e.g. ['R0', 'R1'])
-    current_place — byte address of the first word this expansion will occupy
-    labels        — current label map (needed if body lines contain branches)
-    user_pseudos  — full user pseudo dict, passed through for nested resolution
- 
-    Rules enforced:
-      1. Argument count must match parameter count.
-      2. Body lines must not call the same pseudo (no recursion).
-      3. Substitution is token-aware via word-boundary regex so e.g. 'Rn'
-         never partially matches 'R10'.
-    """
     params = defn.get("params", [])
     body   = defn.get("body",   [])
  
@@ -152,7 +137,7 @@ def expand_user_pseudo(
         ):
             expanded = re.sub(r"\b" + re.escape(param) + r"\b", arg, expanded)
  
-        result = _encode_with_user_pseudos(expanded, place, labels, user_pseudos)
+        result = encode_with_user_pseudos(expanded, place, labels, user_pseudos)
         if isinstance(result, list):
             words.extend(result)
             place += len(result) * 4
@@ -163,7 +148,7 @@ def expand_user_pseudo(
     return words
  
  
-def _encode_with_user_pseudos(
+def encode_with_user_pseudos(
     line: str,
     current_place: int,
     labels: Dict[str, int],

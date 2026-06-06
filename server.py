@@ -87,6 +87,7 @@ def serve_static(filename):
 def run_program():
     data        = request.get_json()
     source_code = data.get("code", "")
+    user_pseudos = data.get("user_pseudos", {})
     cleaned     = clean_lines(source_code.splitlines())
 
     if not cleaned:
