@@ -635,7 +635,68 @@
         </div>
       </div>
 
-      <!-- ── Quick Reference ── -->
+      <div class="docs-section">
+        <h2>User-Defined Macros</h2>
+        <div class="note" style="margin-bottom: 12px">
+          <b>Macros</b> are custom pseudo-instructions you define in the
+          <b>&#8853; Macros</b> panel (toggle button in the main toolbar). They
+          are expanded by the assembler at assemble time — no changes to the
+          runtime. Any built-in instruction or pseudo-instruction can appear in
+          a macro body.
+        </div>
+        <table class="instr-table">
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Description</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mnemonic">Name</td>
+              <td class="desc">
+                The mnemonic you write in your program. Case-insensitive. Must
+                not clash with a built-in instruction.
+              </td>
+              <td class="enc">TRIPLE</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">Parameters</td>
+              <td class="desc">
+                Comma-separated placeholder names used in the body. Substitution
+                is token-aware — a param named <code>Rn</code> will not
+                accidentally match inside <code>R10</code>.
+              </td>
+              <td class="enc">Rd, Rn</td>
+            </tr>
+            <tr>
+              <td class="mnemonic">Body</td>
+              <td class="desc">
+                One instruction per line. Use the parameter names exactly as
+                declared; they are replaced by the actual arguments at assemble
+                time.
+              </td>
+              <td class="enc">
+                MOV R12, Rn<br />ADD Rd, R12, Rn<br />ADD Rd, Rd, Rn
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note" style="margin-top: 10px">
+          <b>Example:</b> define <code>TRIPLE</code> with params
+          <code>Rd, Rn</code> and the body above, then write
+          <code>TRIPLE R1, R0</code> in your program. The assembler substitutes
+          Rd&#8594;R1, Rn&#8594;R0 into each body line and encodes 3 machine
+          words.<br /><br />
+          <b>Rules:</b> macros cannot call themselves (no recursion). Macros
+          survive for the duration of the browser session and are included
+          automatically in every Assemble &amp; Run and Debug call. The
+          assembler correctly accounts for macro word counts when computing
+          label addresses.
+        </div>
+      </div>
+
       <div class="docs-section">
         <h2>Quick Reference</h2>
         <p style="color: #666; font-size: 12px; margin: 0 0 6px">
