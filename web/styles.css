@@ -146,6 +146,15 @@ button {
 }
 .btn-debug:hover { background: var(--green); color: #0a0a0a; }
 
+/* ── NEW: Macros toggle button ───────────────────────────────────────── */
+.btn-macros {
+  background: #2a2a1a;
+  color: #c8c870;
+  border: 2px solid #6a6a30;
+}
+.btn-macros:hover { background: #c8c870; color: #0a0a0a; }
+/* ── END NEW ─────────────────────────────────────────────────────────── */
+
 .btn-docs {
   background: #2c2c2c;
   color: var(--green);
@@ -213,6 +222,141 @@ button {
   border-radius: 50%;
   margin-right: 5px;
   vertical-align: middle;
+}
+
+#macros-panel {
+  width: 340px;
+  min-width: 280px;
+  height: 100%;
+  background: #1e1e16;
+  border-right: 2px solid #6a6a30;
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+#macros-header h2 {
+  margin: 0 0 4px;
+  color: #c8c870;
+  font-size: 15px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+#macros-hint {
+  display: block;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+#macros-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 10px;
+}
+
+#macros-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+#macros-table th {
+  background: #2a2a1a;
+  color: #c8c870;
+  padding: 5px 8px;
+  text-align: left;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+#macros-table th .th-hint {
+  color: #555;
+  font-weight: normal;
+}
+
+#macros-table td {
+  padding: 4px 4px;
+  border-bottom: 1px solid #2a2a18;
+  vertical-align: top;
+}
+
+.macro-name,
+.macro-params {
+  background: #141410;
+  color: #c8c870;
+  border: 1px solid #3a3a20;
+  border-radius: 3px;
+  padding: 4px 6px;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  width: 100%;
+  outline: none;
+}
+.macro-name:focus,
+.macro-params:focus { border-color: #c8c870; }
+
+.macro-body {
+  background: #141410;
+  color: var(--text);
+  border: 1px solid #3a3a20;
+  border-radius: 3px;
+  padding: 4px 6px;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  width: 100%;
+  resize: vertical;
+  outline: none;
+  line-height: 1.5;
+}
+.macro-body:focus { border-color: #c8c870; }
+
+.btn-macro-del {
+  background: transparent;
+  color: #ff6b6b;
+  border: 1px solid #5a2020;
+  border-radius: 3px;
+  padding: 4px 7px;
+  font-size: 10px;
+  cursor: pointer;
+  width: 100%;
+}
+.btn-macro-del:hover { background: #2d1414; }
+
+.btn-macro-add {
+  background: #2a2a1a;
+  color: #c8c870;
+  border: 1px solid #6a6a30;
+  border-radius: 4px;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-family: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.btn-macro-add:hover { background: #c8c870; color: #0a0a0a; }
+
+.macros-note {
+  font-size: 10px;
+  color: #555;
+  line-height: 1.6;
+  border-top: 1px solid #2a2a18;
+  padding-top: 10px;
+  margin-top: auto;
+}
+
+.macros-note code {
+  color: #8a8a50;
+  background: #141410;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 10px;
 }
 
 #output {
