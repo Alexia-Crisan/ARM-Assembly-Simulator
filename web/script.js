@@ -29,7 +29,10 @@ async function assembleAndRun() {
   const res  = await fetch("/run", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ code: codeArea.value }),
+    body: JSON.stringify({
+      code: codeArea.value,
+      user_pseudos: collectUserPseudos(),
+    }),
   });
   const data = await res.json();
   if (data.error) {
@@ -48,6 +51,43 @@ function resetProgram() {
 }
 
 function goToDocs() { window.location.href = "/docs.html"; }
+
+function toggleMacros() {
+  const panel = document.getElementById("macros-panel");
+  panel.classList.toggle("hidden");
+}
+
+function addMacroRow(name = "", params = "", body = "") {
+  const tbody = document.getElementById("macros-body");
+  const tr    = document.createElement("tr");
+  tr.className = "macro-row";
+  tr.innerHTML = `
+    <td><input  class="macro-name"   type="text"     placeholder="e.g. TRIPLE"   value="${escHtml(name)}"   spellcheck="false"/></td>
+    <td><input  class="macro-params" type="text"     placeholder="e.g. Rd, Rn"   value="${escHtml(params)}" spellcheck="false"/></td>
+    <td><textarea class="macro-body" rows="3"        placeholder="One instruction per line&#10;e.g. MOV R12, Rn&#10;ADD Rd, R12, Rn" spellcheck="false">${escHtml(body)}</textarea></td>
+    <td><button class="btn-macro-del" onclick="deleteMacroRow(this)">&#10005;</button></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+function deleteMacroRow(btn) {
+  btn.closest("tr").remove();
+}
+
+function collectUserPseudos() {
+  const result = {};
+  document.querySelectorAll(".macro-row").forEach(row => {
+    const name   = row.querySelector(".macro-name").value.trim().toUpperCase();
+    const params = row.querySelector(".macro-params").value
+                      .split(",").map(p => p.trim()).filter(Boolean);
+    const body   = row.querySelector(".macro-body").value
+                      .split("\n").map(l => l.trim()).filter(Boolean);
+    if (name && body.length > 0) {
+      result[name] = { params, body };
+    }
+  });
+  return result;
+}
 
 // ── Debugger state ────────────────────────────────────────────────────
 let _sessionId   = null;
@@ -86,7 +126,10 @@ async function startDebug() {
   const res  = await fetch("/debug/start", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ code }),
+    body: JSON.stringify({
+      code,
+      user_pseudos: collectUserPseudos(),
+    }),
   });
   const data = await res.json();
   if (data.error) { showError(data.error); return; }
