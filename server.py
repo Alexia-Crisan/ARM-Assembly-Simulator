@@ -213,7 +213,7 @@ def reset():
 
 # ── assembler helper ──────────────────────────────────────────────────
 
-def assemble_with_map(cleaned: list, user_pseudos: dict = {}):
+def assemble_with_map(cleaned: list, user_pseudos = None):
     """
     Assemble and return (machine_codes, addr_to_line).
     addr_to_line maps byte address -> index into the cleaned source line list
@@ -221,6 +221,9 @@ def assemble_with_map(cleaned: list, user_pseudos: dict = {}):
     """
     from encoder.encoder import encode_instruction
     from assembler import encode_with_user_pseudos
+
+    if user_pseudos is None:
+        user_pseudos = {}
 
     labels      = {}
     instr_lines = []

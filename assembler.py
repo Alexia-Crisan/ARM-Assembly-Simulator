@@ -43,7 +43,10 @@ def clean_lines(lines: List[str]) -> List[str]:
     return cleaned
 
 
-def assemble_to_machine_code(lines: List[str], user_pseudos: dict = {}) -> List[int]:
+def assemble_to_machine_code(lines: List[str],  user_pseudos = None) -> List[int]:
+
+    if user_pseudos is None:
+        user_pseudos = {}
 
     # separate labels from instructions
     raw_labels: Dict[str, int] = {}
